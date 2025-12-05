@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Data V Portal</title>
+    <style>
+        :root {
+            --primary-blue: #0055FF;
+            --accent-green: #61CE70;
+            --dark-bg: #0a0a0a;
+            --dark-panel: #141414;
+            --card-bg: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #333333;
+            --error-red: #C62828;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--dark-panel);
+            border-radius: 16px;
+            padding: 48px 40px;
+            border: 1px solid var(--border-color);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-text {
+            font-size: 42px;
+            font-weight: 700;
+        }
+
+        .logo-text .data { color: var(--primary-blue); }
+        .logo-text .v { color: var(--accent-green); }
+
+        .logo-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .form-group input.error {
+            border-color: var(--error-red);
+        }
+
+        .error-message {
+            color: var(--error-red);
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .remember-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .remember-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .remember-check input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .forgot-link {
+            font-size: 14px;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #0044cc;
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .login-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 28px 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        .api-login {
+            text-align: center;
+        }
+
+        .api-login a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .api-login a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 32px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .footer-text a {
+            color: var(--accent-green);
+            text-decoration: none;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .login-btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .login-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo">
+                <div class="logo-text">
+                    <span class="data">Data</span><span class="v">V</span>
+                </div>
+                <div class="logo-subtitle">Asset Portfolio Intelligence</div>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="you@company.com" required>
+                    <div class="error-message" id="email-error">Invalid email address</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <div class="error-message" id="password-error">Password is required</div>
+                </div>
+
+                <div class="remember-row">
+                    <label class="remember-check">
+                        <input type="checkbox" id="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-btn" id="login-btn">
+                    <span class="btn-text">Sign In</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="error-message" id="login-error" style="text-align: center; margin-top: 16px;">
+                    Invalid credentials. Please try again.
+                </div>
+            </form>
+
+            <div class="divider"><span>or</span></div>
+
+            <div class="api-login">
+                <a href="/api-access">Sign in with API Key</a>
+            </div>
+        </div>
+
+        <div class="footer-text">
+            Powered by <a href="https://vltrn.io" target="_blank">VLTRN</a>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const loginError = document.getElementById('login-error');
+
+            // Reset errors
+            loginError.classList.remove('show');
+
+            // Show loading state
+            loginBtn.classList.add('loading');
+            loginBtn.disabled = true;
+
+            // Simulate authentication (replace with actual auth in production)
+            setTimeout(() => {
+                // Demo: accept any login and redirect to projects
+                // In production, this would validate against your auth system
+
+                // Store session (demo only - use proper auth in production)
+                sessionStorage.setItem('datav_authenticated', 'true');
+                sessionStorage.setItem('datav_user', email);
+
+                // Redirect to projects dashboard
+                window.location.href = '/projects/';
+            }, 1500);
+        }
+
+        // Check if already authenticated
+        if (sessionStorage.getItem('datav_authenticated') === 'true') {
+            window.location.href = '/projects/';
+        }
+    </script>
+</body>
+</html>
