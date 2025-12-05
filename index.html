@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data V - Asset Portfolio Intelligence | Powered by VLTRN</title>
+    <style>
+        :root {
+            --primary-blue: #0055FF;
+            --accent-green: #61CE70;
+            --dark-bg: #0a0a0a;
+            --dark-panel: #141414;
+            --card-bg: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--dark-panel);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .logo .data { color: var(--primary-blue); }
+        .logo .v { color: var(--accent-green); }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            background: var(--primary-blue);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: #0044cc;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 40px;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero h1 .highlight {
+            color: var(--primary-blue);
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #0044cc;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--card-bg);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 40px;
+            background: var(--dark-panel);
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Data Flow Section */
+        .data-flow {
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .data-flow h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .data-flow-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 60px;
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            width: 200px;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: ">";
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-blue);
+            font-size: 24px;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 15px;
+        }
+
+        .flow-step h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .flow-step p {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* Partners Section */
+        .partners {
+            padding: 60px 40px;
+            background: var(--dark-panel);
+            text-align: center;
+        }
+
+        .partners h3 {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .partner-logos {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            opacity: 0.6;
+            flex-wrap: wrap;
+        }
+
+        .partner-logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 40px;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-brand {
+            font-size: 18px;
+        }
+
+        .footer-brand .data { color: var(--primary-blue); }
+        .footer-brand .v { color: var(--accent-green); }
+
+        .footer-powered {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer-powered a {
+            color: var(--accent-green);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .flow-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            .flow-step::after {
+                display: none;
+            }
+            .hero h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="logo">
+            <span class="data">Data</span><span class="v">V</span>
+        </div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="/projects">Projects</a>
+            <a href="/status">Status</a>
+        </div>
+        <a href="/onboard" class="nav-cta">Get Started</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Asset Portfolio Intelligence<br><span class="highlight">Automated</span></h1>
+        <p>Transform your logistics data into real-time dashboards. Connect your TMS, warehouse, and client data into one unified view.</p>
+        <div class="hero-buttons">
+            <a href="/onboard" class="btn-primary">Start Onboarding</a>
+            <a href="https://vltrnone.github.io/dotdesignpop-datav-demo/" class="btn-secondary" target="_blank">View Demo</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2>Automated Data Intelligence</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">1</div>
+                <h3>Client Dataset Intake</h3>
+                <p>Upload forecast trackers and order manifests. Our agents automatically parse Excel and CSV files, extract product data, and create project records.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">2</div>
+                <h3>Warehouse Integration</h3>
+                <p>Receive arrival confirmations from warehouse partners. Automatically reconcile expected vs received inventory and update status in real-time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">3</div>
+                <h3>Multi-TMS Parsing</h3>
+                <p>Connect feeds from First Track, FedEx, UPS, XPO, and more. Smart routing ensures shipment data lands in the correct project automatically.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">4</div>
+                <h3>Real-Time Dashboards</h3>
+                <p>Interactive visualizations update automatically as data flows in. Filter by status, location, carrier, and more.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">5</div>
+                <h3>Agent Orchestration</h3>
+                <p>AI agents coordinate all data processing. From intake to dashboard generation, the entire pipeline runs without human intervention.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">6</div>
+                <h3>Instant Deployment</h3>
+                <p>Dashboards deploy automatically to shareable URLs. Send live links to clients for real-time visibility into their assets.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Flow Section -->
+    <section class="data-flow" id="how-it-works">
+        <h2>How It Works</h2>
+        <p class="data-flow-subtitle">Four simple steps from data to dashboard</p>
+        <div class="flow-steps">
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <h4>Upload</h4>
+                <p>Client datasets, warehouse reports, TMS feeds</p>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <h4>Parse</h4>
+                <p>AI agents normalize and validate data</p>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <h4>Route</h4>
+                <p>Smart matching to correct projects</p>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                <h4>Deploy</h4>
+                <p>Live dashboard ready to share</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="partners">
+        <h3>Integrated TMS Partners</h3>
+        <div class="partner-logos">
+            <span class="partner-logo">First Track Logistics</span>
+            <span class="partner-logo">FedEx Freight</span>
+            <span class="partner-logo">UPS Freight</span>
+            <span class="partner-logo">XPO Logistics</span>
+            <span class="partner-logo">SAIA</span>
+            <span class="partner-logo">Estes Express</span>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Ready to automate your asset visibility?</h2>
+        <p>Get your first dashboard live in minutes, not weeks.</p>
+        <a href="/onboard" class="btn-primary">Start Now</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-brand">
+            <span class="data">Data</span><span class="v">V</span>
+        </div>
+        <div class="footer-powered">
+            Powered by <a href="https://vltrn.io" target="_blank">VLTRN</a>
+        </div>
+    </footer>
+</body>
+</html>

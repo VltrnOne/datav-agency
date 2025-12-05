@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Upload Portal | Data V</title>
+    <style>
+        :root {
+            --primary-blue: #0055FF;
+            --accent-green: #61CE70;
+            --dark-bg: #0a0a0a;
+            --dark-panel: #141414;
+            --card-bg: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #333333;
+            --warning-orange: #F9A825;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--dark-panel);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo .data { color: var(--primary-blue); }
+        .logo .v { color: var(--accent-green); }
+
+        .nav-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-back:hover {
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .page-header h1 {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+        }
+
+        /* Upload Cards */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .upload-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 2px dashed var(--border-color);
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-4px);
+        }
+
+        .upload-card.active {
+            border-color: var(--accent-green);
+            border-style: solid;
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--dark-panel);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .upload-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .upload-card p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .upload-formats {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .format-badge {
+            background: var(--dark-panel);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Upload Form */
+        .upload-form {
+            background: var(--dark-panel);
+            border-radius: 16px;
+            padding: 40px;
+            display: none;
+        }
+
+        .upload-form.active {
+            display: block;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .file-drop {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 60px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-drop:hover {
+            border-color: var(--primary-blue);
+            background: rgba(0, 85, 255, 0.05);
+        }
+
+        .file-drop.dragover {
+            border-color: var(--accent-green);
+            background: rgba(97, 206, 112, 0.1);
+        }
+
+        .file-drop p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .file-drop .browse {
+            color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .file-item .name {
+            font-size: 14px;
+        }
+
+        .file-item .size {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .file-item .remove {
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: var(--primary-blue);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #0044cc;
+        }
+
+        .submit-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        /* TMS Partner Selection */
+        .tms-partners {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .tms-option {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .tms-option:hover {
+            border-color: var(--border-color);
+        }
+
+        .tms-option.selected {
+            border-color: var(--primary-blue);
+            background: rgba(0, 85, 255, 0.1);
+        }
+
+        .tms-option .name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .tms-option .prefix {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .status-message.success {
+            display: block;
+            background: rgba(97, 206, 112, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .status-message.error {
+            display: block;
+            background: rgba(198, 40, 40, 0.1);
+            border: 1px solid #C62828;
+            color: #C62828;
+        }
+
+        .status-message.processing {
+            display: block;
+            background: rgba(0, 85, 255, 0.1);
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        @media (max-width: 768px) {
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+            .tms-partners {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="/" class="logo">
+            <span class="data">Data</span><span class="v">V</span>
+        </a>
+        <a href="/" class="nav-back">Back to Home</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="page-header">
+            <h1>Data Upload Portal</h1>
+            <p>Select the type of data you're uploading</p>
+        </div>
+
+        <!-- Upload Type Selection -->
+        <div class="upload-grid">
+            <div class="upload-card" onclick="showForm('client')">
+                <div class="upload-icon">1</div>
+                <h3>Client Dataset</h3>
+                <p>Forecast trackers, order manifests, product catalogs</p>
+                <div class="upload-formats">
+                    <span class="format-badge">.xlsx</span>
+                    <span class="format-badge">.csv</span>
+                    <span class="format-badge">.json</span>
+                </div>
+            </div>
+
+            <div class="upload-card" onclick="showForm('warehouse')">
+                <div class="upload-icon">2</div>
+                <h3>Warehouse Data</h3>
+                <p>Arrival confirmations, inventory snapshots, storage status</p>
+                <div class="upload-formats">
+                    <span class="format-badge">.xlsx</span>
+                    <span class="format-badge">.csv</span>
+                    <span class="format-badge">EDI</span>
+                </div>
+            </div>
+
+            <div class="upload-card" onclick="showForm('tms')">
+                <div class="upload-icon">3</div>
+                <h3>TMS Feed</h3>
+                <p>Shipment tracking from carrier partners</p>
+                <div class="upload-formats">
+                    <span class="format-badge">.csv</span>
+                    <span class="format-badge">.xlsx</span>
+                    <span class="format-badge">API</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Dataset Form -->
+        <div class="upload-form" id="form-client">
+            <div class="form-header">
+                <h2>Upload Client Dataset</h2>
+                <button class="close-btn" onclick="hideForm()">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label>Client Name</label>
+                <input type="text" placeholder="e.g., Acme Corporation" id="client-name">
+            </div>
+
+            <div class="form-group">
+                <label>Job / PO Number</label>
+                <input type="text" placeholder="e.g., 6456" id="client-job">
+            </div>
+
+            <div class="form-group">
+                <label>Dataset File</label>
+                <div class="file-drop" id="client-drop">
+                    <p>Drag and drop your file here, or <span class="browse">browse</span></p>
+                    <p style="font-size: 12px;">Supported: .xlsx, .xls, .csv, .json</p>
+                </div>
+                <div class="file-list" id="client-files"></div>
+            </div>
+
+            <button class="submit-btn" onclick="submitUpload('client')">Upload & Process</button>
+            <div class="status-message" id="status-client"></div>
+        </div>
+
+        <!-- Warehouse Data Form -->
+        <div class="upload-form" id="form-warehouse">
+            <div class="form-header">
+                <h2>Upload Warehouse Data</h2>
+                <button class="close-btn" onclick="hideForm()">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label>Warehouse Partner</label>
+                <select id="warehouse-partner">
+                    <option value="">Select partner...</option>
+                    <option value="first-track">First Track Logistics</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Data Type</label>
+                <select id="warehouse-type">
+                    <option value="">Select type...</option>
+                    <option value="arrival">Arrival Confirmation</option>
+                    <option value="inventory">Inventory Snapshot</option>
+                    <option value="status">Status Update</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Reference / Job Number (for matching)</label>
+                <input type="text" placeholder="e.g., 6456" id="warehouse-ref">
+            </div>
+
+            <div class="form-group">
+                <label>Data File</label>
+                <div class="file-drop" id="warehouse-drop">
+                    <p>Drag and drop your file here, or <span class="browse">browse</span></p>
+                    <p style="font-size: 12px;">Supported: .xlsx, .csv, EDI</p>
+                </div>
+                <div class="file-list" id="warehouse-files"></div>
+            </div>
+
+            <button class="submit-btn" onclick="submitUpload('warehouse')">Upload & Process</button>
+            <div class="status-message" id="status-warehouse"></div>
+        </div>
+
+        <!-- TMS Feed Form -->
+        <div class="upload-form" id="form-tms">
+            <div class="form-header">
+                <h2>Upload TMS Feed</h2>
+                <button class="close-btn" onclick="hideForm()">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label>TMS Partner</label>
+                <div class="tms-partners" id="tms-partner-select">
+                    <div class="tms-option" data-partner="first-track" onclick="selectTMS(this)">
+                        <div class="name">First Track</div>
+                        <div class="prefix">FT-</div>
+                    </div>
+                    <div class="tms-option" data-partner="fedex-freight" onclick="selectTMS(this)">
+                        <div class="name">FedEx Freight</div>
+                        <div class="prefix">FX-</div>
+                    </div>
+                    <div class="tms-option" data-partner="ups-freight" onclick="selectTMS(this)">
+                        <div class="name">UPS Freight</div>
+                        <div class="prefix">UP-</div>
+                    </div>
+                    <div class="tms-option" data-partner="xpo-logistics" onclick="selectTMS(this)">
+                        <div class="name">XPO Logistics</div>
+                        <div class="prefix">XP-</div>
+                    </div>
+                    <div class="tms-option" data-partner="saia" onclick="selectTMS(this)">
+                        <div class="name">SAIA</div>
+                        <div class="prefix">SA-</div>
+                    </div>
+                    <div class="tms-option" data-partner="estes" onclick="selectTMS(this)">
+                        <div class="name">Estes Express</div>
+                        <div class="prefix">ES-</div>
+                    </div>
+                </div>
+                <input type="hidden" id="tms-partner">
+            </div>
+
+            <div class="form-group">
+                <label>Shipment Feed File</label>
+                <div class="file-drop" id="tms-drop">
+                    <p>Drag and drop your file here, or <span class="browse">browse</span></p>
+                    <p style="font-size: 12px;">Supported: .csv, .xlsx</p>
+                </div>
+                <div class="file-list" id="tms-files"></div>
+            </div>
+
+            <button class="submit-btn" onclick="submitUpload('tms')">Upload & Process</button>
+            <div class="status-message" id="status-tms"></div>
+        </div>
+    </main>
+
+    <script>
+        let selectedFiles = {
+            client: null,
+            warehouse: null,
+            tms: null
+        };
+
+        function showForm(type) {
+            // Hide all forms
+            document.querySelectorAll('.upload-form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.upload-card').forEach(c => c.classList.remove('active'));
+
+            // Show selected form
+            document.getElementById('form-' + type).classList.add('active');
+            event.target.closest('.upload-card').classList.add('active');
+        }
+
+        function hideForm() {
+            document.querySelectorAll('.upload-form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.upload-card').forEach(c => c.classList.remove('active'));
+        }
+
+        function selectTMS(element) {
+            document.querySelectorAll('.tms-option').forEach(o => o.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('tms-partner').value = element.dataset.partner;
+        }
+
+        // File drop handling
+        document.querySelectorAll('.file-drop').forEach(dropZone => {
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const type = dropZone.id.split('-')[0];
+                handleFiles(e.dataTransfer.files, type);
+            });
+
+            dropZone.addEventListener('click', () => {
+                const type = dropZone.id.split('-')[0];
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.xlsx,.xls,.csv,.json';
+                input.onchange = (e) => handleFiles(e.target.files, type);
+                input.click();
+            });
+        });
+
+        function handleFiles(files, type) {
+            if (files.length > 0) {
+                selectedFiles[type] = files[0];
+                const fileList = document.getElementById(type + '-files');
+                fileList.innerHTML = `
+                    <div class="file-item">
+                        <span class="name">${files[0].name}</span>
+                        <span class="size">${(files[0].size / 1024).toFixed(1)} KB</span>
+                        <span class="remove" onclick="removeFile('${type}')">&times;</span>
+                    </div>
+                `;
+            }
+        }
+
+        function removeFile(type) {
+            selectedFiles[type] = null;
+            document.getElementById(type + '-files').innerHTML = '';
+        }
+
+        function submitUpload(type) {
+            const statusEl = document.getElementById('status-' + type);
+
+            if (!selectedFiles[type]) {
+                statusEl.className = 'status-message error';
+                statusEl.textContent = 'Please select a file to upload';
+                return;
+            }
+
+            // Show processing status
+            statusEl.className = 'status-message processing';
+            statusEl.textContent = 'Processing... Agents are analyzing your data';
+
+            // Simulate processing (in production, this would be an actual API call)
+            setTimeout(() => {
+                statusEl.className = 'status-message success';
+                statusEl.innerHTML = `
+                    File processed successfully!<br>
+                    <small>Project dashboard will be updated automatically.</small>
+                `;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
