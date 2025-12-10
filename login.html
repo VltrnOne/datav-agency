@@ -308,8 +308,9 @@
         </div>
     </div>
 
+    <script src="/js/config.js"></script>
     <script>
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
 
             const email = document.getElementById('email').value.toLowerCase();
@@ -327,42 +328,20 @@
             loginBtn.classList.add('loading');
             loginBtn.disabled = true;
 
-            // Authenticate against stored users
-            setTimeout(() => {
-                const users = JSON.parse(localStorage.getItem('datav_users') || '{}');
-                const user = users[email];
-
-                if (!user) {
-                    // User not found
-                    showError('No account found with this email address.');
-                    document.getElementById('email').classList.add('error');
-                    return;
-                }
-
-                // Verify password (decode stored password and compare)
-                const storedPassword = atob(user.password);
-                if (storedPassword !== password) {
-                    // Wrong password
-                    showError('Invalid password. Please try again.');
-                    document.getElementById('password').classList.add('error');
-                    return;
-                }
-
-                // Authentication successful
-                sessionStorage.setItem('datav_authenticated', 'true');
-                sessionStorage.setItem('datav_user', email);
-                sessionStorage.setItem('datav_user_data', JSON.stringify(user));
-
-                // If remember me is checked, also store in localStorage
-                if (rememberMe) {
-                    localStorage.setItem('datav_remembered_user', email);
-                } else {
-                    localStorage.removeItem('datav_remembered_user');
-                }
+            try {
+                // Authenticate via backend API
+                await DataVAuth.login(email, password, rememberMe);
 
                 // Redirect to dashboard
                 window.location.href = '/projects/';
-            }, 1000);
+            } catch (error) {
+                showError(error.message || 'Invalid email or password. Please try again.');
+                if (error.message.includes('email')) {
+                    document.getElementById('email').classList.add('error');
+                } else {
+                    document.getElementById('password').classList.add('error');
+                }
+            }
         }
 
         function showError(message) {
@@ -376,7 +355,7 @@
         }
 
         // Check if already authenticated
-        if (sessionStorage.getItem('datav_authenticated') === 'true') {
+        if (DataVAuth.isAuthenticated()) {
             window.location.href = '/projects/';
         }
 

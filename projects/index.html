@@ -490,24 +490,24 @@
         </div>
     </main>
 
+    <script src="/js/config.js"></script>
     <script>
         // Check authentication
-        if (sessionStorage.getItem('datav_authenticated') !== 'true') {
-            // For demo purposes, allow access
-            // In production: window.location.href = '/login.html';
+        if (!DataVAuth.isAuthenticated()) {
+            window.location.href = '/login';
         }
 
         // Set user info
-        const userEmail = sessionStorage.getItem('datav_user') || 'demo@datav.agency';
-        document.getElementById('user-name').textContent = userEmail.split('@')[0];
-        document.getElementById('user-avatar').textContent = userEmail.charAt(0).toUpperCase();
+        const user = DataVAuth.getUser();
+        if (user) {
+            const displayName = user.first_name || user.email.split('@')[0];
+            document.getElementById('user-name').textContent = displayName;
+            document.getElementById('user-avatar').textContent = displayName.charAt(0).toUpperCase();
+        }
 
         function toggleUserMenu() {
-            // Would show dropdown with logout, settings, etc.
             if (confirm('Sign out?')) {
-                sessionStorage.removeItem('datav_authenticated');
-                sessionStorage.removeItem('datav_user');
-                window.location.href = '/login.html';
+                DataVAuth.logout();
             }
         }
     </script>

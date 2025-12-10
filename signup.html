@@ -740,6 +740,7 @@
         </main>
     </div>
 
+    <script src="/js/config.js"></script>
     <script>
         let currentStep = 1;
         let selectedPlan = 'professional';
@@ -928,20 +929,10 @@
             document.getElementById('review-plan').textContent = planName;
         }
 
-        function submitSignup() {
+        async function submitSignup() {
             const terms = document.getElementById('terms');
             if (!terms.checked) {
                 alert('Please agree to the Terms of Service and Privacy Policy');
-                return;
-            }
-
-            const email = document.getElementById('email').value.toLowerCase();
-            const password = document.getElementById('password').value;
-
-            // Check if user already exists
-            const existingUsers = JSON.parse(localStorage.getItem('datav_users') || '{}');
-            if (existingUsers[email]) {
-                alert('An account with this email already exists. Please login instead.');
                 return;
             }
 
@@ -949,36 +940,31 @@
             btn.disabled = true;
             btn.textContent = 'Creating Account...';
 
-            // Simulate API call
-            setTimeout(() => {
-                // Create user account
+            try {
+                // Create user account via backend API
                 const userData = {
-                    firstName: document.getElementById('first-name').value,
-                    lastName: document.getElementById('last-name').value,
-                    email: email,
-                    password: btoa(password), // Basic encoding (not secure - demo only)
+                    email: document.getElementById('email').value.toLowerCase(),
+                    password: document.getElementById('password').value,
+                    first_name: document.getElementById('first-name').value,
+                    last_name: document.getElementById('last-name').value,
                     company: document.getElementById('company').value,
                     plan: selectedPlan,
                     billing: isAnnual ? 'annual' : 'monthly',
-                    addons: selectedAddons,
-                    createdAt: new Date().toISOString()
+                    addons: selectedAddons
                 };
 
-                // Store user in localStorage
-                existingUsers[email] = userData;
-                localStorage.setItem('datav_users', JSON.stringify(existingUsers));
+                await DataVAuth.signup(userData);
 
-                // Auto-login the user
-                sessionStorage.setItem('datav_authenticated', 'true');
-                sessionStorage.setItem('datav_user', email);
-                sessionStorage.setItem('datav_user_data', JSON.stringify(userData));
-
-                console.log('Account created:', email);
+                console.log('Account created:', userData.email);
 
                 document.querySelector('#step-3').classList.remove('active');
                 document.querySelector('#step-success').classList.add('active');
                 document.querySelector('.progress-step[data-step="3"]').classList.add('completed');
-            }, 2000);
+            } catch (error) {
+                alert(error.message || 'Failed to create account. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Start Free Trial';
+            }
         }
 
         // Initialize
