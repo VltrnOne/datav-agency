@@ -3,17 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data V - Asset Portfolio Intelligence | Powered by VLTRN</title>
+    <title>DataV - Transform Any Data Into Live Dashboards | Powered by VLTRN</title>
+    <meta name="description" content="Connect virtually any data source. Get live, interactive dashboards in minutes. No coding required.">
+    <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #0055FF;
-            --accent-green: #61CE70;
-            --dark-bg: #0a0a0a;
-            --dark-panel: #141414;
-            --card-bg: #1a1a1a;
-            --text-primary: #ffffff;
+            --primary: #0055FF;
+            --primary-dark: #0044CC;
+            --accent: #61CE70;
+            --accent-dark: #4CAF50;
+            --dark: #0a0a0a;
+            --dark-secondary: #111111;
+            --dark-panel: #161616;
+            --card: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #ffffff;
             --text-secondary: #888888;
-            --border-color: #333333;
+            --text-muted: #666666;
+            --warning: #F9A825;
+            --danger: #EF5350;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, #0088FF 100%);
         }
 
         * {
@@ -23,81 +35,172 @@
         }
 
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--text);
             line-height: 1.6;
-            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Navigation */
         .nav {
-            background: var(--dark-panel);
-            padding: 20px 40px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 16px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
             font-size: 28px;
-            font-weight: 700;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
-        .logo .data { color: var(--primary-blue); }
-        .logo .v { color: var(--accent-green); }
+        .logo .data { color: var(--primary); }
+        .logo .v { color: var(--accent); }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 32px;
+            align-items: center;
         }
 
         .nav-links a {
             color: var(--text-secondary);
             text-decoration: none;
             font-size: 14px;
-            transition: color 0.3s;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
         .nav-links a:hover {
-            color: var(--text-primary);
+            color: var(--text);
         }
 
         .nav-cta {
-            background: var(--primary-blue);
-            color: white;
-            padding: 10px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background 0.3s;
+            display: flex;
+            gap: 12px;
         }
 
-        .nav-cta:hover {
-            background: #0044cc;
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--card);
+            border-color: var(--text-secondary);
+        }
+
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 16px;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--dark);
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-dark);
         }
 
         /* Hero Section */
         .hero {
-            padding: 100px 40px;
+            padding: 160px 40px 100px;
             text-align: center;
-            max-width: 1000px;
-            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 85, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .hero h1 {
-            font-size: 56px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            line-height: 1.2;
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            max-width: 900px;
+            margin: 0 auto 24px;
+            letter-spacing: -0.02em;
         }
 
         .hero h1 .highlight {
-            color: var(--primary-blue);
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .hero p {
+        .hero-subtitle {
             font-size: 20px;
             color: var(--text-secondary);
             max-width: 600px;
@@ -108,81 +211,240 @@
             display: flex;
             gap: 16px;
             justify-content: center;
-        }
-
-        .btn-primary {
-            background: var(--primary-blue);
-            color: white;
-            padding: 16px 32px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: transform 0.3s, background 0.3s;
-        }
-
-        .btn-primary:hover {
-            background: #0044cc;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-primary);
-            padding: 16px 32px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            border: 1px solid var(--border-color);
-            transition: background 0.3s;
-        }
-
-        .btn-secondary:hover {
-            background: var(--card-bg);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 80px 40px;
-            background: var(--dark-panel);
-        }
-
-        .features h2 {
-            text-align: center;
-            font-size: 36px;
             margin-bottom: 60px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .hero-stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Problem/Solution Section */
+        .problem-solution {
+            padding: 100px 40px;
+            background: var(--dark-secondary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .problem-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problem-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--danger);
+        }
+
+        .problem-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+        }
+
+        .problem-icon img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .problem-card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .problem-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .solution-banner {
+            background: var(--gradient);
+            border-radius: 20px;
+            padding: 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .solution-banner h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .solution-banner p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 40px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-card::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -16px;
+            width: 32px;
+            height: 2px;
+            background: var(--border);
+        }
+
+        .step-card:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--card);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0 auto 24px;
+        }
+
+        .step-card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .step-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Features Grid */
+        .features {
+            padding: 100px 40px;
+            background: var(--dark-secondary);
         }
 
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 24px;
         }
 
         .feature-card {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
         }
 
         .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-blue);
+            width: 56px;
+            height: 56px;
+            background: rgba(97, 206, 112, 0.1);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
             margin-bottom: 20px;
+            padding: 12px;
+        }
+
+        .feature-icon img {
+            width: 100%;
+            height: 100%;
         }
 
         .feature-card h3 {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 12px;
         }
 
@@ -191,161 +453,413 @@
             font-size: 14px;
         }
 
-        /* Data Flow Section */
-        .data-flow {
-            padding: 80px 40px;
-            text-align: center;
+        /* Data Sources */
+        .data-sources {
+            padding: 100px 40px;
         }
 
-        .data-flow h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
+        .sources-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 40px;
         }
 
-        .data-flow-subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 60px;
+        .source-tag {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
         }
 
-        .flow-steps {
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 40px;
+            background: var(--dark-secondary);
+        }
+
+        .pricing-toggle {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 48px;
+            align-items: center;
         }
 
-        .flow-step {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            width: 200px;
+        .pricing-toggle span {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .pricing-toggle span.active {
+            color: var(--text);
+        }
+
+        .toggle-switch {
+            width: 56px;
+            height: 28px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.annual::after {
+            transform: translateX(28px);
+        }
+
+        .save-badge {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
             position: relative;
         }
 
-        .flow-step::after {
-            content: ">";
+        .pricing-card.popular {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular::before {
+            content: 'Most Popular';
             position: absolute;
-            right: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary-blue);
-            font-size: 24px;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .flow-step:last-child::after {
-            display: none;
-        }
-
-        .step-number {
-            width: 32px;
-            height: 32px;
-            background: var(--primary-blue);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            margin: 0 auto 15px;
-        }
-
-        .flow-step h4 {
-            font-size: 16px;
+        .pricing-tier {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-bottom: 8px;
         }
 
-        .flow-step p {
-            color: var(--text-secondary);
-            font-size: 12px;
+        .pricing-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
         }
 
-        /* Partners Section */
-        .partners {
-            padding: 60px 40px;
-            background: var(--dark-panel);
-            text-align: center;
-        }
-
-        .partners h3 {
-            color: var(--text-secondary);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-        }
-
-        .partner-logos {
+        .pricing-price {
             display: flex;
-            justify-content: center;
-            gap: 60px;
-            opacity: 0.6;
-            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 8px;
         }
 
-        .partner-logo {
-            font-size: 18px;
+        .pricing-currency {
+            font-size: 24px;
             font-weight: 600;
+        }
+
+        .pricing-amount {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .pricing-period {
+            font-size: 16px;
             color: var(--text-secondary);
         }
 
-        /* CTA Section */
-        .cta {
-            padding: 100px 40px;
+        .pricing-setup {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features .check {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2361CE70' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17L4 12'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        .pricing-cta {
+            width: 100%;
             text-align: center;
         }
 
-        .cta h2 {
-            font-size: 42px;
-            margin-bottom: 20px;
+        .extra-fee {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-left: 4px;
         }
 
-        .cta p {
-            color: var(--text-secondary);
+        .pricing-note {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        /* Add-ons Section */
+        .addons {
+            padding: 60px 40px;
+            background: var(--dark);
+        }
+
+        .addons-header {
+            text-align: center;
             margin-bottom: 40px;
+        }
+
+        .addons-header h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .addons-header p {
+            color: var(--text-secondary);
+        }
+
+        .addons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .addon-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .addon-card h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .addon-price {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 100px 40px;
+        }
+
+        .demo-card {
+            background: var(--gradient);
+            border-radius: 24px;
+            padding: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .demo-content h2 {
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+
+        .demo-content p {
             font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 500px;
+        }
+
+        .demo-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--primary);
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .demo-link:hover {
+            transform: translateY(-2px);
         }
 
         /* Footer */
         .footer {
-            padding: 40px;
-            border-top: 1px solid var(--border-color);
+            padding: 60px 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .footer-brand {
-            font-size: 18px;
+            font-size: 24px;
+            font-weight: 800;
         }
 
-        .footer-brand .data { color: var(--primary-blue); }
-        .footer-brand .v { color: var(--accent-green); }
+        .footer-brand .data { color: var(--primary); }
+        .footer-brand .v { color: var(--accent); }
 
-        .footer-powered {
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-links a {
             color: var(--text-secondary);
+            text-decoration: none;
             font-size: 14px;
         }
 
+        .footer-links a:hover {
+            color: var(--text);
+        }
+
+        .footer-powered {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
         .footer-powered a {
-            color: var(--accent-green);
+            color: var(--accent);
             text-decoration: none;
         }
 
-        @media (max-width: 768px) {
-            .features-grid {
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            .pricing-card.popular {
+                transform: none;
+            }
+            .features-grid, .problems-grid {
                 grid-template-columns: 1fr;
             }
-            .flow-steps {
-                flex-direction: column;
-                align-items: center;
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-            .flow-step::after {
+            .step-card::after {
                 display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 16px 20px;
+            }
+            .nav-links {
+                display: none;
+            }
+            .hero {
+                padding: 120px 20px 60px;
             }
             .hero h1 {
                 font-size: 36px;
+            }
+            .hero-subtitle {
+                font-size: 16px;
+            }
+            .hero-stats {
+                flex-direction: column;
+                gap: 24px;
+            }
+            .hero-buttons {
+                flex-direction: column;
+            }
+            .section-title {
+                font-size: 28px;
+            }
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+            .addons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .demo-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 24px;
+            }
+            .footer-content {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
             }
         }
     </style>
@@ -353,121 +867,382 @@
 <body>
     <!-- Navigation -->
     <nav class="nav">
-        <div class="logo">
+        <a href="/" class="logo">
             <span class="data">Data</span><span class="v">V</span>
-        </div>
+        </a>
         <div class="nav-links">
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
-            <a href="/projects">Projects</a>
-            <a href="/status">Status</a>
+            <a href="#pricing">Pricing</a>
+            <a href="https://demo.datav.agency" target="_blank">Live Demo</a>
         </div>
-        <a href="/onboard" class="nav-cta">Get Started</a>
+        <div class="nav-cta">
+            <a href="/login" class="btn btn-secondary">Sign In</a>
+            <a href="/signup" class="btn btn-primary">Start Free Trial</a>
+        </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Asset Portfolio Intelligence<br><span class="highlight">Automated</span></h1>
-        <p>Transform your logistics data into real-time dashboards. Connect your TMS, warehouse, and client data into one unified view.</p>
+        <div class="hero-badge">
+            <span class="dot"></span>
+            <span>Now serving 50+ enterprise clients</span>
+        </div>
+        <h1>Transform Any Data Into<br><span class="highlight">Live Dashboards</span></h1>
+        <p class="hero-subtitle">Connect virtually any data source. Get interactive, real-time dashboards in minutes. No coding required. Updated automatically.</p>
         <div class="hero-buttons">
-            <a href="/onboard" class="btn-primary">Start Onboarding</a>
-            <a href="https://vltrnone.github.io/dotdesignpop-datav-demo/" class="btn-secondary" target="_blank">View Demo</a>
+            <a href="/signup" class="btn btn-primary btn-large">Start Free Trial</a>
+            <a href="https://demo.datav.agency" class="btn btn-secondary btn-large" target="_blank">View Live Demo</a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">< 5 min</div>
+                <div class="hero-stat-label">Setup Time</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">100+</div>
+                <div class="hero-stat-label">Data Sources</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">Real-time</div>
+                <div class="hero-stat-label">Updates</div>
+            </div>
         </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- Problem/Solution Section -->
+    <section class="problem-solution">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">The Problem</div>
+                <h2 class="section-title">Your Data is Everywhere. Your Visibility is Nowhere.</h2>
+            </div>
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <div class="problem-icon"><img src="/assets/icons/icon-scattered-data.svg" alt="Scattered Data"></div>
+                    <h3>Scattered Spreadsheets</h3>
+                    <p>Data trapped in dozens of Excel files, Google Sheets, and email attachments. No single source of truth.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon"><img src="/assets/icons/icon-manual-updates.svg" alt="Manual Updates"></div>
+                    <h3>Manual Updates</h3>
+                    <p>Hours wasted copying, pasting, and reformatting data. Updates are always behind reality.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon"><img src="/assets/icons/icon-disconnected.svg" alt="Disconnected Systems"></div>
+                    <h3>Disconnected Systems</h3>
+                    <p>TMS, warehouse, and client data don't talk to each other. Integration is a nightmare.</p>
+                </div>
+            </div>
+            <div class="solution-banner">
+                <h3>DataV Solves This Instantly</h3>
+                <p>Upload once. Connect your sources. Get live, interactive dashboards that update automatically and share with anyone.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">How It Works</div>
+                <h2 class="section-title">From Data Chaos to Clarity in 4 Steps</h2>
+                <p class="section-subtitle">No IT department required. No coding. Just results.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Connect</h3>
+                    <p>Upload files, connect to cloud drives, or use our API. Excel, CSV, JSON - we handle it all.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Process</h3>
+                    <p>Our AI agents automatically parse, normalize, and validate your data. Zero manual work.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Visualize</h3>
+                    <p>Interactive dashboards generate instantly. Filter, sort, and drill down into your data.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Share</h3>
+                    <p>Send live links to clients. Updates flow automatically. Everyone sees the same truth.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
     <section class="features" id="features">
-        <h2>Automated Data Intelligence</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">1</div>
-                <h3>Client Dataset Intake</h3>
-                <p>Upload forecast trackers and order manifests. Our agents automatically parse Excel and CSV files, extract product data, and create project records.</p>
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Features</div>
+                <h2 class="section-title">Everything You Need. Nothing You Don't.</h2>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">2</div>
-                <h3>Warehouse Integration</h3>
-                <p>Receive arrival confirmations from warehouse partners. Automatically reconcile expected vs received inventory and update status in real-time.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">3</div>
-                <h3>Multi-TMS Parsing</h3>
-                <p>Connect feeds from First Track, FedEx, UPS, XPO, and more. Smart routing ensures shipment data lands in the correct project automatically.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">4</div>
-                <h3>Real-Time Dashboards</h3>
-                <p>Interactive visualizations update automatically as data flows in. Filter by status, location, carrier, and more.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">5</div>
-                <h3>Agent Orchestration</h3>
-                <p>AI agents coordinate all data processing. From intake to dashboard generation, the entire pipeline runs without human intervention.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">6</div>
-                <h3>Instant Deployment</h3>
-                <p>Dashboards deploy automatically to shareable URLs. Send live links to clients for real-time visibility into their assets.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Data Flow Section -->
-    <section class="data-flow" id="how-it-works">
-        <h2>How It Works</h2>
-        <p class="data-flow-subtitle">Four simple steps from data to dashboard</p>
-        <div class="flow-steps">
-            <div class="flow-step">
-                <div class="step-number">1</div>
-                <h4>Upload</h4>
-                <p>Client datasets, warehouse reports, TMS feeds</p>
-            </div>
-            <div class="flow-step">
-                <div class="step-number">2</div>
-                <h4>Parse</h4>
-                <p>AI agents normalize and validate data</p>
-            </div>
-            <div class="flow-step">
-                <div class="step-number">3</div>
-                <h4>Route</h4>
-                <p>Smart matching to correct projects</p>
-            </div>
-            <div class="flow-step">
-                <div class="step-number">4</div>
-                <h4>Deploy</h4>
-                <p>Live dashboard ready to share</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><img src="/assets/icons/icon-realtime.svg" alt="Real-Time"></div>
+                    <h3>Real-Time Updates</h3>
+                    <p>Dashboards refresh automatically as data changes. No manual refresh required.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><img src="/assets/icons/icon-connections.svg" alt="Connections"></div>
+                    <h3>Universal Connectors</h3>
+                    <p>Excel, CSV, Google Sheets, APIs, webhooks, FTP, cloud drives - connect anything.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><img src="/assets/icons/icon-customize.svg" alt="Customize"></div>
+                    <h3>Fully Customizable</h3>
+                    <p>White-label with your brand. Custom colors, logos, and domains.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><img src="/assets/icons/icon-security.svg" alt="Security"></div>
+                    <h3>Secure Access</h3>
+                    <p>Role-based permissions. Client portals with individual logins. SSO support.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><img src="/assets/icons/icon-mobile.svg" alt="Mobile"></div>
+                    <h3>Mobile Ready</h3>
+                    <p>Responsive dashboards work on any device. Share via link or embed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><img src="/assets/icons/icon-ai.svg" alt="AI"></div>
+                    <h3>AI-Powered</h3>
+                    <p>Intelligent data parsing. Auto-detection of formats. Smart error handling.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Partners Section -->
-    <section class="partners">
-        <h3>Integrated TMS Partners</h3>
-        <div class="partner-logos">
-            <span class="partner-logo">First Track Logistics</span>
-            <span class="partner-logo">FedEx Freight</span>
-            <span class="partner-logo">UPS Freight</span>
-            <span class="partner-logo">XPO Logistics</span>
-            <span class="partner-logo">SAIA</span>
-            <span class="partner-logo">Estes Express</span>
+    <!-- Data Sources -->
+    <section class="data-sources">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Integrations</div>
+                <h2 class="section-title">Connect Your Data. All of It.</h2>
+                <p class="section-subtitle">We integrate with virtually any data source you're already using.</p>
+            </div>
+            <div class="sources-grid">
+                <span class="source-tag">Excel / .xlsx</span>
+                <span class="source-tag">CSV Files</span>
+                <span class="source-tag">Google Sheets</span>
+                <span class="source-tag">Google Drive</span>
+                <span class="source-tag">Dropbox</span>
+                <span class="source-tag">OneDrive</span>
+                <span class="source-tag">REST APIs</span>
+                <span class="source-tag">Webhooks</span>
+                <span class="source-tag">FTP / SFTP</span>
+                <span class="source-tag">EDI (X12)</span>
+                <span class="source-tag">JSON</span>
+                <span class="source-tag">XML</span>
+                <span class="source-tag">TMS Feeds</span>
+                <span class="source-tag">WMS Data</span>
+                <span class="source-tag">ERP Exports</span>
+                <span class="source-tag">Custom Sources</span>
+            </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta">
-        <h2>Ready to automate your asset visibility?</h2>
-        <p>Get your first dashboard live in minutes, not weeks.</p>
-        <a href="/onboard" class="btn-primary">Start Now</a>
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Pricing</div>
+                <h2 class="section-title">Simple, Transparent Pricing</h2>
+                <p class="section-subtitle">Start free. Scale as you grow. No hidden fees.</p>
+            </div>
+
+            <div class="pricing-toggle">
+                <span class="active" id="monthly-label">Monthly</span>
+                <div class="toggle-switch" id="billing-toggle" onclick="toggleBilling()"></div>
+                <span id="annual-label">Annual</span>
+                <span class="save-badge">Save 15%</span>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Starter -->
+                <div class="pricing-card">
+                    <div class="pricing-tier">Starter</div>
+                    <div class="pricing-name">For Small Teams</div>
+                    <div class="pricing-price">
+                        <span class="pricing-currency">$</span>
+                        <span class="pricing-amount" data-monthly="199" data-annual="169">199</span>
+                        <span class="pricing-period">/month</span>
+                    </div>
+                    <div class="pricing-setup">+ $499 one-time setup</div>
+                    <ul class="pricing-features">
+                        <li><span class="check"></span> 1 Dashboard</li>
+                        <li><span class="check"></span> 3 User Accounts</li>
+                        <li><span class="check"></span> 5 Data Sources</li>
+                        <li><span class="check"></span> Standard Integrations</li>
+                        <li><span class="check"></span> Email Support</li>
+                        <li><span class="check"></span> Daily Data Refresh</li>
+                    </ul>
+                    <a href="/signup?plan=starter" class="btn btn-secondary btn-large pricing-cta">Get Started</a>
+                </div>
+
+                <!-- Professional -->
+                <div class="pricing-card popular">
+                    <div class="pricing-tier">Professional</div>
+                    <div class="pricing-name">For Growing Companies</div>
+                    <div class="pricing-price">
+                        <span class="pricing-currency">$</span>
+                        <span class="pricing-amount" data-monthly="499" data-annual="424">499</span>
+                        <span class="pricing-period">/month</span>
+                    </div>
+                    <div class="pricing-setup">+ $999 one-time setup</div>
+                    <ul class="pricing-features">
+                        <li><span class="check"></span> 5 Dashboards</li>
+                        <li><span class="check"></span> 10 User Accounts</li>
+                        <li><span class="check"></span> 15 Data Sources</li>
+                        <li><span class="check"></span> Advanced Integrations</li>
+                        <li><span class="check"></span> Priority Support</li>
+                        <li><span class="check"></span> Real-time Updates</li>
+                        <li><span class="check"></span> API Access</li>
+                    </ul>
+                    <a href="/signup?plan=professional" class="btn btn-primary btn-large pricing-cta">Get Started</a>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="pricing-card">
+                    <div class="pricing-tier">Enterprise</div>
+                    <div class="pricing-name">For Large Organizations</div>
+                    <div class="pricing-price">
+                        <span class="pricing-currency">$</span>
+                        <span class="pricing-amount" data-monthly="999" data-annual="849">999</span>
+                        <span class="pricing-period">/month</span>
+                    </div>
+                    <div class="pricing-setup">+ $2,499 one-time setup</div>
+                    <ul class="pricing-features">
+                        <li><span class="check"></span> 15 Dashboards</li>
+                        <li><span class="check"></span> 50 Users <span class="extra-fee">+$25/user</span></li>
+                        <li><span class="check"></span> 50 Data Sources</li>
+                        <li><span class="check"></span> Custom Integrations*</li>
+                        <li><span class="check"></span> Dedicated Account Manager</li>
+                        <li><span class="check"></span> White-Label Included</li>
+                        <li><span class="check"></span> SLA Guarantee</li>
+                        <li><span class="check"></span> SSO / SAML</li>
+                    </ul>
+                    <div class="pricing-note">*Custom integrations quoted separately</div>
+                    <a href="/signup?plan=enterprise" class="btn btn-secondary btn-large pricing-cta">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add-ons -->
+    <section class="addons">
+        <div class="container">
+            <div class="addons-header">
+                <h3>A La Carte Add-ons</h3>
+                <p>Customize your plan with additional features</p>
+            </div>
+            <div class="addons-grid">
+                <div class="addon-card">
+                    <h4>Additional Dashboard</h4>
+                    <div class="addon-price">$49/mo each</div>
+                </div>
+                <div class="addon-card">
+                    <h4>Additional User</h4>
+                    <div class="addon-price">$29/mo each</div>
+                </div>
+                <div class="addon-card">
+                    <h4>Custom Integration</h4>
+                    <div class="addon-price">$299/mo</div>
+                </div>
+                <div class="addon-card">
+                    <h4>White-Label</h4>
+                    <div class="addon-price">$299/mo</div>
+                </div>
+                <div class="addon-card">
+                    <h4>API Access</h4>
+                    <div class="addon-price">$199/mo</div>
+                </div>
+                <div class="addon-card">
+                    <h4>Priority Support</h4>
+                    <div class="addon-price">$149/mo</div>
+                </div>
+                <div class="addon-card">
+                    <h4>Dedicated Manager</h4>
+                    <div class="addon-price">$299/mo</div>
+                </div>
+                <div class="addon-card">
+                    <h4>Custom Development</h4>
+                    <div class="addon-price">$149/hr</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo CTA -->
+    <section class="demo-section">
+        <div class="container">
+            <div class="demo-card">
+                <div class="demo-content">
+                    <h2>See DataV in Action</h2>
+                    <p>Explore a live dashboard with real data. No signup required. See exactly what you'll get.</p>
+                    <a href="https://demo.datav.agency" class="demo-link" target="_blank">
+                        View Live Demo <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-left: 4px;"><path d="M5 12H19"/><path d="M12 5L19 12L12 19"/></svg>
+                    </a>
+                </div>
+                <div class="demo-visual">
+                    <!-- Placeholder for dashboard preview -->
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-brand">
-            <span class="data">Data</span><span class="v">V</span>
-        </div>
-        <div class="footer-powered">
-            Powered by <a href="https://vltrn.io" target="_blank">VLTRN</a>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="data">Data</span><span class="v">V</span>
+            </div>
+            <div class="footer-links">
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+                <a href="/contact">Contact</a>
+                <a href="https://demo.datav.agency" target="_blank">Demo</a>
+            </div>
+            <div class="footer-powered">
+                Powered by <a href="https://vltrn.io" target="_blank">VLTRN</a>
+            </div>
         </div>
     </footer>
+
+    <script>
+        let isAnnual = false;
+
+        function toggleBilling() {
+            isAnnual = !isAnnual;
+            const toggle = document.getElementById('billing-toggle');
+            const monthlyLabel = document.getElementById('monthly-label');
+            const annualLabel = document.getElementById('annual-label');
+            const amounts = document.querySelectorAll('.pricing-amount');
+
+            toggle.classList.toggle('annual', isAnnual);
+            monthlyLabel.classList.toggle('active', !isAnnual);
+            annualLabel.classList.toggle('active', isAnnual);
+
+            amounts.forEach(amount => {
+                const monthly = amount.dataset.monthly;
+                const annual = amount.dataset.annual;
+                amount.textContent = isAnnual ? annual : monthly;
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | DataV - Transform Any Data Into Live Dashboards</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0055FF;
+            --primary-dark: #0044CC;
+            --accent: #61CE70;
+            --dark: #0a0a0a;
+            --dark-secondary: #111111;
+            --card: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #ffffff;
+            --text-secondary: #888888;
+            --text-muted: #666666;
+            --error: #EF5350;
+            --success: #61CE70;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .logo .data { color: var(--primary); }
+        .logo .v { color: var(--accent); }
+
+        /* Main Container */
+        .signup-container {
+            flex: 1;
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Left Side - Plan Selection */
+        .plan-sidebar {
+            width: 400px;
+            background: var(--dark-secondary);
+            padding: 40px;
+            border-right: 1px solid var(--border);
+        }
+
+        .plan-sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .plan-sidebar p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .plan-option {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .plan-option:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .plan-option.selected {
+            border-color: var(--primary);
+            background: rgba(0, 85, 255, 0.05);
+        }
+
+        .plan-option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .plan-option-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .plan-option-price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .plan-option-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .plan-option-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .plan-feature-tag {
+            background: var(--dark);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .billing-toggle {
+            margin-top: 24px;
+            padding: 16px;
+            background: var(--card);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .billing-toggle label {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .billing-toggle input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .billing-save {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .order-summary {
+            margin-top: 32px;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 12px;
+        }
+
+        .order-summary h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding-top: 16px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .summary-row .label {
+            color: var(--text-secondary);
+        }
+
+        /* Right Side - Form */
+        .form-section {
+            flex: 1;
+            padding: 40px 60px;
+            max-width: 700px;
+        }
+
+        .form-section h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .form-section > p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .progress-step.active {
+            background: var(--primary);
+        }
+
+        .progress-step.completed {
+            background: var(--accent);
+        }
+
+        /* Form Groups */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group input.error {
+            border-color: var(--error);
+        }
+
+        .form-group .error-msg {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-group .error-msg.show {
+            display: block;
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        /* Step Navigation */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--card);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Terms */
+        .terms-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .terms-check input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+        }
+
+        .terms-check label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .terms-check label a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Success State */
+        .success-message {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(97, 206, 112, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+        }
+
+        .success-message h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .success-message p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Add-ons Section */
+        .addons-section {
+            margin-top: 24px;
+        }
+
+        .addons-section h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .addon-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .addon-item:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .addon-item.selected {
+            border-color: var(--primary);
+        }
+
+        .addon-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .addon-info input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .addon-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .addon-price {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .signup-container {
+                flex-direction: column;
+            }
+            .plan-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .form-section {
+                max-width: 100%;
+                padding: 40px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full {
+                grid-column: span 1;
+            }
+            .form-section {
+                padding: 24px;
+            }
+            .plan-sidebar {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo">
+            <span class="data">Data</span><span class="v">V</span>
+        </a>
+    </header>
+
+    <div class="signup-container">
+        <!-- Left Sidebar - Plan Selection -->
+        <aside class="plan-sidebar">
+            <h2>Select Your Plan</h2>
+            <p>Choose the plan that fits your needs. Upgrade anytime.</p>
+
+            <div class="plan-option" data-plan="starter" data-monthly="199" data-annual="169" data-setup="499">
+                <div class="plan-option-header">
+                    <span class="plan-option-name">Starter</span>
+                    <span class="plan-option-price">$199/mo</span>
+                </div>
+                <div class="plan-option-desc">Perfect for small teams getting started</div>
+                <div class="plan-option-features">
+                    <span class="plan-feature-tag">1 Dashboard</span>
+                    <span class="plan-feature-tag">3 Users</span>
+                    <span class="plan-feature-tag">5 Sources</span>
+                </div>
+            </div>
+
+            <div class="plan-option selected" data-plan="professional" data-monthly="499" data-annual="424" data-setup="999">
+                <div class="plan-option-header">
+                    <span class="plan-option-name">Professional</span>
+                    <span class="plan-option-price">$499/mo</span>
+                </div>
+                <div class="plan-option-desc">For growing companies with multiple projects</div>
+                <div class="plan-option-features">
+                    <span class="plan-feature-tag">5 Dashboards</span>
+                    <span class="plan-feature-tag">10 Users</span>
+                    <span class="plan-feature-tag">15 Sources</span>
+                    <span class="plan-feature-tag">API Access</span>
+                </div>
+            </div>
+
+            <div class="plan-option" data-plan="enterprise" data-monthly="999" data-annual="849" data-setup="2499">
+                <div class="plan-option-header">
+                    <span class="plan-option-name">Enterprise</span>
+                    <span class="plan-option-price">$999/mo</span>
+                </div>
+                <div class="plan-option-desc">Unlimited everything for large organizations</div>
+                <div class="plan-option-features">
+                    <span class="plan-feature-tag">Unlimited</span>
+                    <span class="plan-feature-tag">White-Label</span>
+                    <span class="plan-feature-tag">SSO</span>
+                    <span class="plan-feature-tag">SLA</span>
+                </div>
+            </div>
+
+            <div class="billing-toggle">
+                <label>
+                    <input type="checkbox" id="annual-billing" onchange="updateBilling()">
+                    Annual billing
+                </label>
+                <span class="billing-save">Save 15%</span>
+            </div>
+
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span class="label">Plan</span>
+                    <span id="summary-plan">Professional</span>
+                </div>
+                <div class="summary-row">
+                    <span class="label">Monthly</span>
+                    <span id="summary-monthly">$499/mo</span>
+                </div>
+                <div class="summary-row">
+                    <span class="label">Setup Fee</span>
+                    <span id="summary-setup">$999</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Due Today</span>
+                    <span id="summary-total">$1,498</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Side - Form -->
+        <main class="form-section">
+            <h1>Create Your Account</h1>
+            <p>Get started in minutes. No credit card required for trial.</p>
+
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1"></div>
+                <div class="progress-step" data-step="2"></div>
+                <div class="progress-step" data-step="3"></div>
+            </div>
+
+            <!-- Step 1: Account Info -->
+            <div class="step-content active" id="step-1">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first-name">First Name</label>
+                        <input type="text" id="first-name" placeholder="John" required>
+                        <div class="error-msg">First name is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Last Name</label>
+                        <input type="text" id="last-name" placeholder="Smith" required>
+                        <div class="error-msg">Last name is required</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <input type="email" id="email" placeholder="john@company.com" required>
+                    <div class="error-msg">Valid email is required</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Min 8 characters" required>
+                    <div class="error-msg">Password must be at least 8 characters</div>
+                </div>
+                <div class="form-actions">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="nextStep(1)">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Company Info -->
+            <div class="step-content" id="step-2">
+                <div class="form-group">
+                    <label for="company">Company Name</label>
+                    <input type="text" id="company" placeholder="Acme Inc." required>
+                    <div class="error-msg">Company name is required</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="industry">Industry</label>
+                        <select id="industry" required>
+                            <option value="">Select industry</option>
+                            <option value="logistics">Logistics & Transportation</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="retail">Retail & E-commerce</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="finance">Finance & Banking</option>
+                            <option value="technology">Technology</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="company-size">Company Size</label>
+                        <select id="company-size" required>
+                            <option value="">Select size</option>
+                            <option value="1-10">1-10 employees</option>
+                            <option value="11-50">11-50 employees</option>
+                            <option value="51-200">51-200 employees</option>
+                            <option value="201-500">201-500 employees</option>
+                            <option value="500+">500+ employees</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+1 (555) 000-0000">
+                </div>
+
+                <div class="addons-section">
+                    <h3>Optional Add-ons</h3>
+                    <div class="addon-item" data-addon="white-label" data-price="299">
+                        <div class="addon-info">
+                            <input type="checkbox" id="addon-whitelabel">
+                            <label for="addon-whitelabel" class="addon-name">White-Label Branding</label>
+                        </div>
+                        <span class="addon-price">+$299/mo</span>
+                    </div>
+                    <div class="addon-item" data-addon="api" data-price="199">
+                        <div class="addon-info">
+                            <input type="checkbox" id="addon-api">
+                            <label for="addon-api" class="addon-name">API Access</label>
+                        </div>
+                        <span class="addon-price">+$199/mo</span>
+                    </div>
+                    <div class="addon-item" data-addon="priority" data-price="149">
+                        <div class="addon-info">
+                            <input type="checkbox" id="addon-priority">
+                            <label for="addon-priority" class="addon-name">Priority Support</label>
+                        </div>
+                        <span class="addon-price">+$149/mo</span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                    <button class="btn btn-primary" onclick="nextStep(2)">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Review & Submit -->
+            <div class="step-content" id="step-3">
+                <div class="form-group">
+                    <label>Review Your Information</label>
+                    <div style="background: var(--card); padding: 20px; border-radius: 8px; margin-top: 8px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                            <div>
+                                <span style="color: var(--text-secondary);">Name:</span>
+                                <span id="review-name" style="margin-left: 8px;"></span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-secondary);">Email:</span>
+                                <span id="review-email" style="margin-left: 8px;"></span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-secondary);">Company:</span>
+                                <span id="review-company" style="margin-left: 8px;"></span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-secondary);">Plan:</span>
+                                <span id="review-plan" style="margin-left: 8px;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terms-check">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">
+                        I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
+                        I understand that my subscription will begin immediately and I will be charged the setup fee plus first month's subscription.
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="prevStep(3)">Back</button>
+                    <button class="btn btn-primary" onclick="submitSignup()" id="submit-btn">Create Account</button>
+                </div>
+            </div>
+
+            <!-- Success State -->
+            <div class="step-content" id="step-success">
+                <div class="success-message">
+                    <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17L4 12"/></svg></div>
+                    <h2>Welcome to DataV!</h2>
+                    <p>Your account has been created successfully. You're now logged in and ready to start building dashboards.</p>
+                    <a href="/projects/" class="btn btn-primary">Go to Dashboard</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedPlan = 'professional';
+        let isAnnual = false;
+        let selectedAddons = [];
+
+        // Initialize from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const planParam = urlParams.get('plan');
+        if (planParam) {
+            selectPlan(planParam);
+        }
+
+        // Plan selection
+        document.querySelectorAll('.plan-option').forEach(option => {
+            option.addEventListener('click', () => {
+                selectPlan(option.dataset.plan);
+            });
+        });
+
+        function selectPlan(plan) {
+            document.querySelectorAll('.plan-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.plan === plan) {
+                    opt.classList.add('selected');
+                    selectedPlan = plan;
+                }
+            });
+            updateSummary();
+        }
+
+        function updateBilling() {
+            isAnnual = document.getElementById('annual-billing').checked;
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const planOption = document.querySelector(`.plan-option[data-plan="${selectedPlan}"]`);
+            const monthly = isAnnual ? planOption.dataset.annual : planOption.dataset.monthly;
+            const setup = planOption.dataset.setup;
+            const planName = planOption.querySelector('.plan-option-name').textContent;
+
+            // Update price display on plan cards
+            document.querySelectorAll('.plan-option').forEach(opt => {
+                const price = isAnnual ? opt.dataset.annual : opt.dataset.monthly;
+                opt.querySelector('.plan-option-price').textContent = `$${price}/mo`;
+            });
+
+            // Calculate addons
+            let addonTotal = 0;
+            selectedAddons.forEach(addon => {
+                addonTotal += parseInt(addon.price);
+            });
+
+            const monthlyTotal = parseInt(monthly) + addonTotal;
+            const total = monthlyTotal + parseInt(setup);
+
+            document.getElementById('summary-plan').textContent = planName;
+            document.getElementById('summary-monthly').textContent = `$${monthlyTotal}/mo`;
+            document.getElementById('summary-setup').textContent = `$${setup}`;
+            document.getElementById('summary-total').textContent = `$${total.toLocaleString()}`;
+        }
+
+        // Addon selection
+        document.querySelectorAll('.addon-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.type !== 'checkbox') {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                }
+
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                item.classList.toggle('selected', checkbox.checked);
+
+                if (checkbox.checked) {
+                    selectedAddons.push({
+                        name: item.dataset.addon,
+                        price: item.dataset.price
+                    });
+                } else {
+                    selectedAddons = selectedAddons.filter(a => a.name !== item.dataset.addon);
+                }
+                updateSummary();
+            });
+        });
+
+        // Step navigation
+        function nextStep(from) {
+            if (!validateStep(from)) return;
+
+            document.querySelector(`#step-${from}`).classList.remove('active');
+            document.querySelector(`#step-${from + 1}`).classList.add('active');
+            document.querySelector(`.progress-step[data-step="${from}"]`).classList.add('completed');
+            document.querySelector(`.progress-step[data-step="${from + 1}"]`).classList.add('active');
+            currentStep = from + 1;
+
+            if (currentStep === 3) {
+                populateReview();
+            }
+        }
+
+        function prevStep(from) {
+            document.querySelector(`#step-${from}`).classList.remove('active');
+            document.querySelector(`#step-${from - 1}`).classList.add('active');
+            document.querySelector(`.progress-step[data-step="${from}"]`).classList.remove('active');
+            document.querySelector(`.progress-step[data-step="${from - 1}"]`).classList.remove('completed');
+            currentStep = from - 1;
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+
+            if (step === 1) {
+                const firstName = document.getElementById('first-name');
+                const lastName = document.getElementById('last-name');
+                const email = document.getElementById('email');
+                const password = document.getElementById('password');
+
+                if (!firstName.value.trim()) {
+                    showError(firstName);
+                    isValid = false;
+                } else {
+                    hideError(firstName);
+                }
+
+                if (!lastName.value.trim()) {
+                    showError(lastName);
+                    isValid = false;
+                } else {
+                    hideError(lastName);
+                }
+
+                if (!email.value.trim() || !isValidEmail(email.value)) {
+                    showError(email);
+                    isValid = false;
+                } else {
+                    hideError(email);
+                }
+
+                if (!password.value || password.value.length < 8) {
+                    showError(password);
+                    isValid = false;
+                } else {
+                    hideError(password);
+                }
+            }
+
+            if (step === 2) {
+                const company = document.getElementById('company');
+                if (!company.value.trim()) {
+                    showError(company);
+                    isValid = false;
+                } else {
+                    hideError(company);
+                }
+            }
+
+            return isValid;
+        }
+
+        function showError(input) {
+            input.classList.add('error');
+            input.parentElement.querySelector('.error-msg').classList.add('show');
+        }
+
+        function hideError(input) {
+            input.classList.remove('error');
+            input.parentElement.querySelector('.error-msg').classList.remove('show');
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function populateReview() {
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const email = document.getElementById('email').value;
+            const company = document.getElementById('company').value;
+            const planOption = document.querySelector(`.plan-option[data-plan="${selectedPlan}"]`);
+            const planName = planOption.querySelector('.plan-option-name').textContent;
+
+            document.getElementById('review-name').textContent = `${firstName} ${lastName}`;
+            document.getElementById('review-email').textContent = email;
+            document.getElementById('review-company').textContent = company;
+            document.getElementById('review-plan').textContent = planName;
+        }
+
+        function submitSignup() {
+            const terms = document.getElementById('terms');
+            if (!terms.checked) {
+                alert('Please agree to the Terms of Service and Privacy Policy');
+                return;
+            }
+
+            const email = document.getElementById('email').value.toLowerCase();
+            const password = document.getElementById('password').value;
+
+            // Check if user already exists
+            const existingUsers = JSON.parse(localStorage.getItem('datav_users') || '{}');
+            if (existingUsers[email]) {
+                alert('An account with this email already exists. Please login instead.');
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Creating Account...';
+
+            // Simulate API call
+            setTimeout(() => {
+                // Create user account
+                const userData = {
+                    firstName: document.getElementById('first-name').value,
+                    lastName: document.getElementById('last-name').value,
+                    email: email,
+                    password: btoa(password), // Basic encoding (not secure - demo only)
+                    company: document.getElementById('company').value,
+                    plan: selectedPlan,
+                    billing: isAnnual ? 'annual' : 'monthly',
+                    addons: selectedAddons,
+                    createdAt: new Date().toISOString()
+                };
+
+                // Store user in localStorage
+                existingUsers[email] = userData;
+                localStorage.setItem('datav_users', JSON.stringify(existingUsers));
+
+                // Auto-login the user
+                sessionStorage.setItem('datav_authenticated', 'true');
+                sessionStorage.setItem('datav_user', email);
+                sessionStorage.setItem('datav_user_data', JSON.stringify(userData));
+
+                console.log('Account created:', email);
+
+                document.querySelector('#step-3').classList.remove('active');
+                document.querySelector('#step-success').classList.add('active');
+                document.querySelector('.progress-step[data-step="3"]').classList.add('completed');
+            }, 2000);
+        }
+
+        // Initialize
+        updateSummary();
+    </script>
+</body>
+</html>

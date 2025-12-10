@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Data V Portal</title>
+    <title>Sign In | DataV</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #0055FF;
-            --accent-green: #61CE70;
-            --dark-bg: #0a0a0a;
-            --dark-panel: #141414;
-            --card-bg: #1a1a1a;
-            --text-primary: #ffffff;
+            --primary: #0055FF;
+            --primary-dark: #0044CC;
+            --accent: #61CE70;
+            --dark: #0a0a0a;
+            --dark-secondary: #111111;
+            --card: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #ffffff;
             --text-secondary: #888888;
-            --border-color: #333333;
-            --error-red: #C62828;
+            --error: #EF5350;
         }
 
         * {
@@ -24,26 +29,26 @@
         }
 
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .login-container {
+        .login-wrapper {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             padding: 20px;
         }
 
         .login-card {
-            background: var(--dark-panel);
-            border-radius: 16px;
+            background: var(--dark-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             padding: 48px 40px;
-            border: 1px solid var(--border-color);
         }
 
         .logo {
@@ -52,12 +57,12 @@
         }
 
         .logo-text {
-            font-size: 42px;
-            font-weight: 700;
+            font-size: 48px;
+            font-weight: 800;
         }
 
-        .logo-text .data { color: var(--primary-blue); }
-        .logo-text .v { color: var(--accent-green); }
+        .logo-text .data { color: var(--primary); }
+        .logo-text .v { color: var(--accent); }
 
         .logo-subtitle {
             color: var(--text-secondary);
@@ -71,66 +76,69 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
             color: var(--text-secondary);
+            margin-bottom: 8px;
         }
 
         .form-group input {
             width: 100%;
             padding: 14px 16px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            color: var(--text-primary);
+            color: var(--text);
             font-size: 15px;
-            transition: border-color 0.3s;
+            font-family: inherit;
+            transition: border-color 0.2s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: var(--primary-blue);
+            border-color: var(--primary);
         }
 
         .form-group input.error {
-            border-color: var(--error-red);
+            border-color: var(--error);
         }
 
-        .error-message {
-            color: var(--error-red);
+        .error-msg {
+            color: var(--error);
             font-size: 13px;
             margin-top: 8px;
+            text-align: center;
             display: none;
         }
 
-        .error-message.show {
+        .error-msg.show {
             display: block;
         }
 
-        .remember-row {
+        .form-options {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
         }
 
-        .remember-check {
+        .remember-me {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-secondary);
             cursor: pointer;
         }
 
-        .remember-check input {
+        .remember-me input {
             width: 16px;
             height: 16px;
         }
 
         .forgot-link {
-            font-size: 14px;
-            color: var(--primary-blue);
+            font-size: 13px;
+            color: var(--primary);
             text-decoration: none;
         }
 
@@ -138,30 +146,45 @@
             text-decoration: underline;
         }
 
-        .login-btn {
+        .btn {
             width: 100%;
             padding: 16px;
-            background: var(--primary-blue);
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
+            font-family: inherit;
+            transition: background 0.2s;
         }
 
-        .login-btn:hover {
-            background: #0044cc;
+        .btn:hover {
+            background: var(--primary-dark);
         }
 
-        .login-btn:active {
-            transform: scale(0.98);
-        }
-
-        .login-btn:disabled {
-            background: var(--border-color);
+        .btn:disabled {
+            background: var(--border);
             cursor: not-allowed;
+        }
+
+        .btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .btn.loading .btn-text { display: none; }
+        .btn.loading .spinner { display: inline-block; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .divider {
@@ -177,25 +200,27 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: var(--border-color);
+            background: var(--border);
         }
 
         .divider span {
             padding: 0 16px;
         }
 
-        .api-login {
+        .signup-link {
             text-align: center;
-        }
-
-        .api-login a {
-            color: var(--text-secondary);
-            text-decoration: none;
             font-size: 14px;
+            color: var(--text-secondary);
         }
 
-        .api-login a:hover {
-            color: var(--text-primary);
+        .signup-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
         }
 
         .footer-text {
@@ -206,37 +231,30 @@
         }
 
         .footer-text a {
-            color: var(--accent-green);
+            color: var(--accent);
             text-decoration: none;
         }
 
-        /* Loading spinner */
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto;
+        /* Demo Banner */
+        .demo-banner {
+            background: rgba(97, 206, 112, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 13px;
         }
 
-        .login-btn.loading .spinner {
-            display: inline-block;
-        }
-
-        .login-btn.loading .btn-text {
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .demo-banner a {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="login-wrapper">
         <div class="login-card">
             <div class="logo">
                 <div class="logo-text">
@@ -245,41 +263,43 @@
                 <div class="logo-subtitle">Asset Portfolio Intelligence</div>
             </div>
 
+            <div class="demo-banner">
+                Want to explore first? <a href="https://demo.datav.agency" target="_blank">View Live Demo</a>
+            </div>
+
             <form id="login-form" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" placeholder="you@company.com" required>
-                    <div class="error-message" id="email-error">Invalid email address</div>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" placeholder="Enter your password" required>
-                    <div class="error-message" id="password-error">Password is required</div>
                 </div>
 
-                <div class="remember-row">
-                    <label class="remember-check">
+                <div class="form-options">
+                    <label class="remember-me">
                         <input type="checkbox" id="remember">
                         <span>Remember me</span>
                     </label>
                     <a href="/forgot-password" class="forgot-link">Forgot password?</a>
                 </div>
 
-                <button type="submit" class="login-btn" id="login-btn">
+                <button type="submit" class="btn" id="login-btn">
                     <span class="btn-text">Sign In</span>
                     <div class="spinner"></div>
                 </button>
 
-                <div class="error-message" id="login-error" style="text-align: center; margin-top: 16px;">
-                    Invalid credentials. Please try again.
+                <div class="error-msg" id="login-error">
+                    Invalid email or password. Please try again.
                 </div>
             </form>
 
-            <div class="divider"><span>or</span></div>
+            <div class="divider"><span>New to DataV?</span></div>
 
-            <div class="api-login">
-                <a href="/api-access">Sign in with API Key</a>
+            <div class="signup-link">
+                <a href="/signup">Create an account</a> and start your free trial
             </div>
         </div>
 
@@ -292,36 +312,82 @@
         function handleLogin(event) {
             event.preventDefault();
 
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.toLowerCase();
             const password = document.getElementById('password').value;
             const loginBtn = document.getElementById('login-btn');
             const loginError = document.getElementById('login-error');
+            const rememberMe = document.getElementById('remember').checked;
 
-            // Reset errors
+            // Reset error
             loginError.classList.remove('show');
+            document.getElementById('email').classList.remove('error');
+            document.getElementById('password').classList.remove('error');
 
-            // Show loading state
+            // Show loading
             loginBtn.classList.add('loading');
             loginBtn.disabled = true;
 
-            // Simulate authentication (replace with actual auth in production)
+            // Authenticate against stored users
             setTimeout(() => {
-                // Demo: accept any login and redirect to projects
-                // In production, this would validate against your auth system
+                const users = JSON.parse(localStorage.getItem('datav_users') || '{}');
+                const user = users[email];
 
-                // Store session (demo only - use proper auth in production)
+                if (!user) {
+                    // User not found
+                    showError('No account found with this email address.');
+                    document.getElementById('email').classList.add('error');
+                    return;
+                }
+
+                // Verify password (decode stored password and compare)
+                const storedPassword = atob(user.password);
+                if (storedPassword !== password) {
+                    // Wrong password
+                    showError('Invalid password. Please try again.');
+                    document.getElementById('password').classList.add('error');
+                    return;
+                }
+
+                // Authentication successful
                 sessionStorage.setItem('datav_authenticated', 'true');
                 sessionStorage.setItem('datav_user', email);
+                sessionStorage.setItem('datav_user_data', JSON.stringify(user));
 
-                // Redirect to projects dashboard
+                // If remember me is checked, also store in localStorage
+                if (rememberMe) {
+                    localStorage.setItem('datav_remembered_user', email);
+                } else {
+                    localStorage.removeItem('datav_remembered_user');
+                }
+
+                // Redirect to dashboard
                 window.location.href = '/projects/';
-            }, 1500);
+            }, 1000);
+        }
+
+        function showError(message) {
+            const loginBtn = document.getElementById('login-btn');
+            const loginError = document.getElementById('login-error');
+
+            loginError.textContent = message;
+            loginError.classList.add('show');
+            loginBtn.classList.remove('loading');
+            loginBtn.disabled = false;
         }
 
         // Check if already authenticated
         if (sessionStorage.getItem('datav_authenticated') === 'true') {
             window.location.href = '/projects/';
         }
+
+        // Auto-fill remembered email
+        document.addEventListener('DOMContentLoaded', function() {
+            const rememberedUser = localStorage.getItem('datav_remembered_user');
+            if (rememberedUser) {
+                document.getElementById('email').value = rememberedUser;
+                document.getElementById('remember').checked = true;
+            }
+        });
     </script>
 </body>
 </html>
