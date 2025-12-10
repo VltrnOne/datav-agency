@@ -342,7 +342,7 @@
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-left">
-            <a href="/" class="logo">
+            <a href="/projects/" class="logo">
                 <span class="data">Data</span><span class="v">V</span>
             </a>
             <div class="nav-links">
@@ -362,7 +362,7 @@
     <!-- Main Content -->
     <main class="main">
         <div class="page-header">
-            <h1>Your Projects</h1>
+            <h1 id="page-title">Your Projects</h1>
             <a href="/onboard" class="new-project-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> New Project
             </a>
@@ -424,7 +424,7 @@
             </div>
 
             <!-- Sample Project 2 -->
-            <div class="project-card">
+            <div class="project-card" onclick="window.location.href='https://demo.datav.agency/'">
                 <div class="project-header">
                     <span class="project-status active">Active</span>
                     <div class="project-name">Beverage Co. Distribution</div>
@@ -448,7 +448,7 @@
                     <div class="project-updated">Last updated: 2 hours ago</div>
                 </div>
                 <div class="project-footer">
-                    <a href="#" class="project-link">View Dashboard</a>
+                    <a href="https://demo.datav.agency/" class="project-link" target="_blank">View Dashboard</a>
                     <div class="project-actions">
                         <button class="action-btn" title="Settings"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></button>
                         <button class="action-btn" title="Share"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></button>
@@ -457,7 +457,7 @@
             </div>
 
             <!-- Sample Project 3 -->
-            <div class="project-card">
+            <div class="project-card" onclick="window.location.href='https://demo.datav.agency/'">
                 <div class="project-header">
                     <span class="project-status pending">Onboarding</span>
                     <div class="project-name">Fresh Foods Coolers</div>
@@ -481,7 +481,7 @@
                     <div class="project-updated">Awaiting warehouse data</div>
                 </div>
                 <div class="project-footer">
-                    <a href="/onboard" class="project-link">Upload Data</a>
+                    <a href="https://demo.datav.agency/" class="project-link" target="_blank">View Dashboard</a>
                     <div class="project-actions">
                         <button class="action-btn" title="Settings"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></button>
                     </div>
@@ -497,12 +497,18 @@
             window.location.href = '/login';
         }
 
-        // Set user info
+        // Set user info and page title
         const user = DataVAuth.getUser();
         if (user) {
             const displayName = user.first_name || user.email.split('@')[0];
             document.getElementById('user-name').textContent = displayName;
             document.getElementById('user-avatar').textContent = displayName.charAt(0).toUpperCase();
+
+            // Set page title with company name if available
+            if (user.company) {
+                document.getElementById('page-title').textContent = user.company + ' Projects';
+                document.title = user.company + ' | DataV Portal';
+            }
         }
 
         function toggleUserMenu() {
