@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Demo | DataV - Asset Intelligence Dashboard</title>
+    <style>
+        /* VLTRN/DataV Brand Colors */
+        :root {
+            --primary-blue: #0055FF;
+            --accent-green: #FF00FF;
+            --dark-bg: #2b2b2b;
+            --dark-panel: #303030;
+            --text-gray: #54595F;
+            --light-gray: #EFEFEF;
+            --medium-gray: #7A7A7A;
+            --white: #FFFFFF;
+            --black: #000000;
+            --warning-orange: #F9A825;
+            --danger-red: #C62828;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-gray);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* App Container */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Browser Chrome */
+        .browser-chrome {
+            background: var(--dark-bg);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .browser-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .browser-dot.red { background: #FF5F57; }
+        .browser-dot.yellow { background: #FEBC2E; }
+        .browser-dot.green { background: #28C840; }
+
+        .url-bar {
+            flex: 1;
+            background: var(--dark-panel);
+            border-radius: 6px;
+            padding: 8px 15px;
+            color: var(--medium-gray);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .url-bar .lock { color: var(--accent-green); }
+        .url-bar .url-text { color: #999; }
+
+        /* Navigation */
+        .main-nav {
+            background: linear-gradient(90deg, var(--primary-blue) 0%, #0044CC 100%);
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 20px;
+            font-weight: 600;
+            padding: 18px 0;
+            margin-right: 50px;
+            cursor: pointer;
+        }
+
+        .nav-logo .data { color: var(--white); }
+        .nav-logo .v { color: var(--accent-green); }
+
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .nav-tab {
+            padding: 18px 24px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            user-select: none;
+        }
+
+        .nav-tab:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-tab.active {
+            color: var(--white);
+            background: rgba(255,255,255,0.15);
+            border-bottom-color: var(--accent-green);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            background: #F5F6FA;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slicer Panel */
+        .slicer-panel {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .slicer-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--medium-gray);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .slicer-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .slicer {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .slicer-label {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Custom Dropdown */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-trigger {
+            background: var(--white);
+            border: 2px solid #DDD;
+            border-radius: 6px;
+            padding: 12px 40px 12px 15px;
+            font-size: 14px;
+            color: var(--dark-bg);
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .dropdown-trigger:hover {
+            border-color: var(--primary-blue);
+        }
+
+        .dropdown-trigger.open {
+            border-color: var(--primary-blue);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .dropdown-trigger::after {
+            content: "▼";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: var(--primary-blue);
+            transition: transform 0.2s;
+        }
+
+        .dropdown-trigger.open::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 2px solid var(--primary-blue);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 12px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #EEE;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #F0F7FF;
+        }
+
+        .dropdown-item.selected {
+            background: #E6F0FF;
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+
+        .dropdown-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #CCC;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item.selected .dropdown-checkbox {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .clear-filters-btn {
+            background: transparent;
+            border: 2px solid var(--accent-green);
+            color: var(--accent-green);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: auto;
+            align-self: flex-end;
+        }
+
+        .clear-filters-btn:hover {
+            background: var(--accent-green);
+            color: var(--white);
+        }
+
+        /* KPI Cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            color: var(--medium-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--dark-bg);
+            transition: all 0.3s;
+        }
+
+        .kpi-value.blue { color: var(--primary-blue); }
+        .kpi-value.green { color: var(--accent-green); }
+        .kpi-value.orange { color: var(--warning-orange); }
+        .kpi-value.red { color: var(--danger-red); }
+
+        .kpi-change {
+            font-size: 12px;
+            margin-top: 8px;
+            color: var(--medium-gray);
+        }
+
+        .kpi-change.up { color: var(--accent-green); }
+        .kpi-change.down { color: var(--danger-red); }
+
+        /* Data Table */
+        .data-table {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #EEE;
+            background: #FAFBFC;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark-bg);
+        }
+
+        .table-search {
+            padding: 10px 15px;
+            border: 2px solid #DDD;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 250px;
+            transition: border-color 0.2s;
+        }
+
+        .table-search:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #F8F9FA;
+            padding: 14px 15px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #EEE;
+        }
+
+        td {
+            padding: 14px 15px;
+            font-size: 13px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        tr {
+            transition: background 0.2s;
+        }
+
+        tr:hover {
+            background: #FAFBFC;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge.in-stock { background: #E8F5E9; color: #2E7D32; }
+        .status-badge.pending { background: #FFF8E1; color: #F9A825; }
+        .status-badge.in-transit { background: #E3F2FD; color: #1565C0; }
+        .status-badge.delivered { background: #E0F2F1; color: #00796B; }
+        .status-badge.active { background: #E8F5E9; color: #2E7D32; }
+        .status-badge.expired { background: #FFEBEE; color: #C62828; }
+        .status-badge.scheduled { background: #E3F2FD; color: #1565C0; }
+        .status-badge.requested { background: #FFF3E0; color: #EF6C00; }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-bg);
+            margin-bottom: 15px;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 200px;
+            padding-top: 20px;
+        }
+
+        .chart-bar-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: linear-gradient(180deg, var(--primary-blue) 0%, #0044CC 100%);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .chart-bar.green {
+            background: linear-gradient(180deg, var(--accent-green) 0%, #4CAF50 100%);
+        }
+
+        .chart-bar.orange {
+            background: linear-gradient(180deg, var(--warning-orange) 0%, #FF8F00 100%);
+        }
+
+        .chart-bar-label {
+            font-size: 11px;
+            color: var(--medium-gray);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .chart-bar-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--dark-bg);
+            margin-bottom: 5px;
+        }
+
+        /* Asset Flow */
+        .asset-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px;
+            background: var(--white);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .flow-step:hover {
+            background: #F5F6FA;
+        }
+
+        .flow-step.active {
+            background: #E6F0FF;
+        }
+
+        .flow-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 24px;
+            color: var(--white);
+            transition: transform 0.2s;
+        }
+
+        .flow-step:hover .flow-icon {
+            transform: scale(1.1);
+        }
+
+        .flow-icon.green { background: var(--accent-green); }
+        .flow-icon.orange { background: #EF6C00; }
+        .flow-icon.purple { background: #9C27B0; }
+
+        .flow-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-bg);
+            margin-bottom: 2px;
+        }
+
+        .flow-subtitle {
+            font-size: 11px;
+            color: var(--medium-gray);
+            margin-bottom: 6px;
+        }
+
+        .flow-count {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: #CCC;
+        }
+
+        /* Summary Cards */
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .summary-card.green { border-left-color: var(--accent-green); }
+        .summary-card.orange { border-left-color: var(--warning-orange); }
+
+        .summary-card h3 {
+            font-size: 14px;
+            color: var(--dark-bg);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item-label {
+            color: var(--medium-gray);
+        }
+
+        .summary-item-value {
+            font-weight: 600;
+            color: var(--dark-bg);
+        }
+
+        /* Filter Active State Indicator */
+        .filter-indicator {
+            display: inline-block;
+            background: var(--primary-blue);
+            color: var(--white);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* Page Title */
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-bg);
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        .app-footer {
+            background: var(--dark-bg);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--medium-gray);
+            border-top: 1px solid #444;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-brand .data { color: var(--primary-blue); }
+        .footer-brand .v { color: var(--accent-green); }
+    </style>
+</head>
+<body>
+    <!-- Demo Banner -->
+    <div style="background: linear-gradient(135deg, #0055FF, #0088FF); padding: 12px 32px; text-align: center; font-size: 14px; color: white; display: flex; justify-content: center; align-items: center; gap: 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+        <span>Live Demo - DataV Asset Intelligence Dashboard</span>
+        <a href="https://datav.agency/signup" style="color: white; background: rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 20px; text-decoration: none; font-weight: 600;">Start Free Trial</a>
+        <a href="https://datav.agency" style="color: white; background: rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 20px; text-decoration: none; font-weight: 600;">Return to Home</a>
+    </div>
+
+    <div class="app-container">
+        <!-- Browser Chrome -->
+        <div class="browser-chrome">
+            <div class="browser-dots">
+                <div class="browser-dot red"></div>
+                <div class="browser-dot yellow"></div>
+                <div class="browser-dot green"></div>
+            </div>
+            <div class="url-bar">
+                <span class="lock">SECURE</span>
+                <span class="url-text" id="url-display">https://datav.vltrn.io/demo/assets/dashboard</span>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+            <div class="nav-logo" onclick="switchTab('dashboard')">
+                <span class="data">Data</span><span class="v">V</span>
+            </div>
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">Dashboard</div>
+                <div class="nav-tab" data-tab="warehouse" onclick="switchTab('warehouse')">Warehouse</div>
+                <div class="nav-tab" data-tab="shipments" onclick="switchTab('shipments')">Shipments</div>
+                <div class="nav-tab" data-tab="warranty" onclick="switchTab('warranty')">Warranty & Service</div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div class="page active" id="page-dashboard">
+                <div class="slicer-panel">
+                    <div class="slicer-title">Filter Dashboard</div>
+                    <div class="slicer-row">
+                        <!-- Warehouse Filter -->
+                        <div class="slicer">
+                            <div class="slicer-label">Warehouse</div>
+                            <div class="custom-dropdown" data-filter="warehouse">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">
+                                    All Inventory
+                                </div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Inventory</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="pending" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Pending Arrival</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="active" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Active Inventory</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipments Filter -->
+                        <div class="slicer">
+                            <div class="slicer-label">Shipments</div>
+                            <div class="custom-dropdown" data-filter="shipments">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">
+                                    All Shipments
+                                </div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Shipments</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="picked-up" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Picked Up / In Transit</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="scheduling" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Scheduling for Delivery</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="history" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Shipment History</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Warranty & Service Filter -->
+                        <div class="slicer">
+                            <div class="slicer-label">Warranty & Service</div>
+                            <div class="custom-dropdown" data-filter="warranty">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">
+                                    All Status
+                                </div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Status</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="active-warranty" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Units with Active Warranties</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="warranty-requests" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Warranty Requests</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="in-scheduling" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Service Status - In Scheduling</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="scheduled" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Service Scheduled</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
+                    </div>
+                </div>
+
+                <!-- Asset Flow Overview -->
+                <div class="asset-flow">
+                    <div class="flow-step" onclick="switchTab('warehouse')">
+                        <div class="flow-icon">1</div>
+                        <div class="flow-title">Warehouse</div>
+                        <div class="flow-subtitle">Active in Storage</div>
+                        <div class="flow-count" id="dash-warehouse-count">326</div>
+                    </div>
+                    <div class="flow-arrow">--></div>
+                    <div class="flow-step" onclick="switchTab('shipments')">
+                        <div class="flow-icon orange">2</div>
+                        <div class="flow-title">Shipments</div>
+                        <div class="flow-subtitle">Serial # Assigned</div>
+                        <div class="flow-count" id="dash-shipments-count">32</div>
+                    </div>
+                    <div class="flow-arrow">--></div>
+                    <div class="flow-step" onclick="switchTab('warranty')">
+                        <div class="flow-icon green">3</div>
+                        <div class="flow-title">Delivered</div>
+                        <div class="flow-subtitle" style="color: var(--accent-green); font-weight: 600;">Warranty Starts</div>
+                        <div class="flow-count" id="dash-delivered-count">247</div>
+                    </div>
+                    <div class="flow-arrow">--></div>
+                    <div class="flow-step" onclick="switchTab('warranty')">
+                        <div class="flow-icon purple">4</div>
+                        <div class="flow-title">Warranty & Service</div>
+                        <div class="flow-subtitle">1-Year Coverage</div>
+                        <div class="flow-count" id="dash-warranty-count">189</div>
+                    </div>
+                </div>
+
+                <!-- KPI Row -->
+                <div class="kpi-row" id="dashboard-kpis">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Pending Arrival</div>
+                        <div class="kpi-value orange" id="kpi-pending">48</div>
+                        <div class="kpi-change">En route to warehouse</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Active Inventory</div>
+                        <div class="kpi-value green" id="kpi-active-inv">278</div>
+                        <div class="kpi-change up">Confirmed in Warehouse</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">In Transit</div>
+                        <div class="kpi-value blue" id="kpi-transit">32</div>
+                        <div class="kpi-change">8 arriving today</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Service Requests</div>
+                        <div class="kpi-value" id="kpi-service">7</div>
+                        <div class="kpi-change">3 pending schedule</div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="summary-row">
+                    <div class="summary-card">
+                        <h3>Warehouse Summary</h3>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Pending Arrival</span>
+                            <span class="summary-item-value" id="sum-pending">48</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Active Inventory</span>
+                            <span class="summary-item-value" id="sum-active">278</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Exited Warehouse</span>
+                            <span class="summary-item-value" id="sum-exited">95</span>
+                        </div>
+                    </div>
+                    <div class="summary-card green">
+                        <h3>Shipment Summary</h3>
+                        <div class="summary-item">
+                            <span class="summary-item-label">In Transit</span>
+                            <span class="summary-item-value" id="sum-transit">32</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Scheduling Delivery</span>
+                            <span class="summary-item-value" id="sum-scheduling">16</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Delivered (History)</span>
+                            <span class="summary-item-value" id="sum-delivered">247</span>
+                        </div>
+                    </div>
+                    <div class="summary-card orange">
+                        <h3>Warranty & Service</h3>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Active Warranties</span>
+                            <span class="summary-item-value" id="sum-warranties">189</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Warranty Requests</span>
+                            <span class="summary-item-value" id="sum-requests">7</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-label">Service Scheduled</span>
+                            <span class="summary-item-value" id="sum-scheduled">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warehouse Page -->
+            <div class="page" id="page-warehouse">
+                <h1 class="page-title">Warehouse Storage - SKU Level Tracking</h1>
+
+                <div class="slicer-panel">
+                    <div class="slicer-title">Warehouse Filters</div>
+                    <div class="slicer-row">
+                        <div class="slicer">
+                            <div class="slicer-label">Inventory Status</div>
+                            <div class="custom-dropdown" data-filter="wh-status">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">All Status</div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Status</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="pending" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Pending Arrival</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="active" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Active Inventory</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="exited" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Exited Warehouse</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slicer">
+                            <div class="slicer-label">Location</div>
+                            <div class="custom-dropdown" data-filter="wh-location">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">All Locations</div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Locations</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="atlanta" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>First Track - Atlanta</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="miami" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>First Track - Miami</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="houston" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>First Track - Houston</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="phoenix" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>First Track - Phoenix</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="los-angeles" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>First Track - Los Angeles</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="charlotte" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>First Track - Charlotte</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Pending Arrival</div>
+                        <div class="kpi-value orange">0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Active Inventory</div>
+                        <div class="kpi-value green">326</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Exited Warehouse</div>
+                        <div class="kpi-value blue">95</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Fill Rate</div>
+                        <div class="kpi-value">77%</div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">Cooler Inventory - First Track Storage (DEMO)</div>
+                        <input type="text" class="table-search" placeholder="Search Location, SKU, or Serial...">
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>SKU</th>
+                                <th>Product Name</th>
+                                <th>Serial Number</th>
+                            </tr>
+                        </thead>
+                        <tbody id="warehouse-table">
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-FIT-001</td>
+                                <td>Fit Cooler (Bodega/C-Store Model)</td>
+                                <td>SJ-6456-FIT-0001</td>
+                            </tr>
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-FIT-001</td>
+                                <td>Fit Cooler (Bodega/C-Store Model)</td>
+                                <td>SJ-6456-FIT-0002</td>
+                            </tr>
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-SC190L</td>
+                                <td>SC190L Hero (G10 EQ)</td>
+                                <td>SJ-6456-190L-0001</td>
+                            </tr>
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-SC190L</td>
+                                <td>SC190L Hero (G10 EQ)</td>
+                                <td>SJ-6456-190L-0002</td>
+                            </tr>
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-SC68L</td>
+                                <td>SC68L Hero (G1.5 Eq)</td>
+                                <td>SJ-6456-68L-0001</td>
+                            </tr>
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-SC68L</td>
+                                <td>SC68L Hero (G1.5 Eq)</td>
+                                <td>SJ-6456-68L-0002</td>
+                            </tr>
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-SLIM-001</td>
+                                <td>Slimline Cooler (Smaller G9 EQ)</td>
+                                <td>SJ-6456-SLIM-0001</td>
+                            </tr>
+                            <tr>
+                                <td><strong>First Track - Atlanta</strong></td>
+                                <td>SJ-SLIM-001</td>
+                                <td>Slimline Cooler (Smaller G9 EQ)</td>
+                                <td>SJ-6456-SLIM-0002</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Shipments Page -->
+            <div class="page" id="page-shipments">
+                <h1 class="page-title">Shipment Tracking - Serial Number Visibility</h1>
+
+                <div class="slicer-panel">
+                    <div class="slicer-title">Shipment Filters</div>
+                    <div class="slicer-row">
+                        <div class="slicer">
+                            <div class="slicer-label">Shipment Status</div>
+                            <div class="custom-dropdown" data-filter="ship-status">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">All Shipments</div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Shipments</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="picked-up" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Picked Up / In Transit</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="scheduling" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Scheduling for Delivery</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="history" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Shipment History</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slicer">
+                            <div class="slicer-label">Carrier</div>
+                            <div class="custom-dropdown" data-filter="ship-carrier">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">All Carriers</div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Carriers</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="first-tracks" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>First Tracks</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="fedex" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>FedEx</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="ups" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>UPS</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="freight" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Freight</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-label">In Transit</div>
+                        <div class="kpi-value blue">32</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Picked Up</div>
+                        <div class="kpi-value">18</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Scheduling Delivery</div>
+                        <div class="kpi-value orange">16</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Delivered (History)</div>
+                        <div class="kpi-value green">247</div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">Cooler Shipments - First Track Logistics</div>
+                        <input type="text" class="table-search" placeholder="Search Serial Number...">
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Serial Number</th>
+                                <th>SKU</th>
+                                <th>Client</th>
+                                <th>Destination</th>
+                                <th>Carrier</th>
+                                <th>Tracking #</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipments-table">
+                            <tr data-status="in-transit">
+                                <td><strong>SJ-6456-FIT-0015</strong></td>
+                                <td>SJ-FIT-001</td>
+                                <td>Corner Store ATL</td>
+                                <td>Atlanta, GA</td>
+                                <td>First Tracks</td>
+                                <td>FT-2024-78901</td>
+                                <td><span class="status-badge in-transit">In Transit</span></td>
+                            </tr>
+                            <tr data-status="in-transit">
+                                <td><strong>SJ-6456-190L-0012</strong></td>
+                                <td>SJ-SC190L</td>
+                                <td>Bodega Miami</td>
+                                <td>Miami, FL</td>
+                                <td>First Tracks</td>
+                                <td>FT-2024-78902</td>
+                                <td><span class="status-badge in-transit">In Transit</span></td>
+                            </tr>
+                            <tr data-status="scheduling">
+                                <td><strong>SJ-6456-68L-0045</strong></td>
+                                <td>SJ-SC68L</td>
+                                <td>C-Store Charlotte</td>
+                                <td>Charlotte, NC</td>
+                                <td>First Tracks</td>
+                                <td>FT-2024-78903</td>
+                                <td><span class="status-badge pending">Scheduling</span></td>
+                            </tr>
+                            <tr data-status="delivered">
+                                <td><strong>SJ-6456-SLIM-0089</strong></td>
+                                <td>SJ-SLIM-001</td>
+                                <td>Quick Mart Tampa</td>
+                                <td>Tampa, FL</td>
+                                <td>First Tracks</td>
+                                <td>FT-2024-78856</td>
+                                <td><span class="status-badge delivered">Delivered</span></td>
+                            </tr>
+                            <tr data-status="in-transit">
+                                <td><strong>SJ-6456-FIT-0023</strong></td>
+                                <td>SJ-FIT-001</td>
+                                <td>Metro Grocery Houston</td>
+                                <td>Houston, TX</td>
+                                <td>First Tracks</td>
+                                <td>FT-2024-78904</td>
+                                <td><span class="status-badge in-transit">In Transit</span></td>
+                            </tr>
+                            <tr data-status="scheduling">
+                                <td><strong>SJ-6456-SC190L-0031</strong></td>
+                                <td>SJ-SC190L</td>
+                                <td>Desert Mart Phoenix</td>
+                                <td>Phoenix, AZ</td>
+                                <td>First Tracks</td>
+                                <td>FT-2024-78905</td>
+                                <td><span class="status-badge pending">Scheduling</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Warranty & Service Page -->
+            <div class="page" id="page-warranty">
+                <h1 class="page-title">Warranty & Service - 1 Year Coverage from Delivery Date</h1>
+
+                <div class="slicer-panel">
+                    <div class="slicer-title">Warranty & Service Filters</div>
+                    <div class="slicer-row">
+                        <div class="slicer">
+                            <div class="slicer-label">Warranty Status</div>
+                            <div class="custom-dropdown" data-filter="war-status">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">All Status</div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Status</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="active" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Units with Active Warranties</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="requests" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Warranty Requests</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="in-scheduling" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Service Status - In Scheduling</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="scheduled" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Service Scheduled</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slicer">
+                            <div class="slicer-label">Service Status</div>
+                            <div class="custom-dropdown" data-filter="war-service">
+                                <div class="dropdown-trigger" onclick="toggleDropdown(this)">All Service</div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item selected" data-value="all" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox">X</div>
+                                        <span>All Service</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="no-issues" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>No Issues</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="requested" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Service Requested</span>
+                                    </div>
+                                    <div class="dropdown-item" data-value="scheduled" onclick="selectOption(this)">
+                                        <div class="dropdown-checkbox"></div>
+                                        <span>Service Scheduled</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Active Warranties</div>
+                        <div class="kpi-value green">189</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Warranty Requests</div>
+                        <div class="kpi-value orange">7</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">In Scheduling</div>
+                        <div class="kpi-value">4</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Service Scheduled</div>
+                        <div class="kpi-value blue">3</div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">Cooler Warranty Status - 1 Year from Delivery</div>
+                        <input type="text" class="table-search" placeholder="Search Serial Number...">
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Serial Number</th>
+                                <th>Product</th>
+                                <th>Client</th>
+                                <th>Delivered Date</th>
+                                <th>Warranty Expires</th>
+                                <th>Warranty Status</th>
+                                <th>Service Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="warranty-table">
+                            <tr>
+                                <td><strong>SJ-6456-FIT-0001</strong></td>
+                                <td>Fit Cooler (Bodega Model)</td>
+                                <td>Corner Store ATL</td>
+                                <td>Mar 1, 2024</td>
+                                <td>Mar 1, 2025</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td><span class="status-badge in-stock">No Issues</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SJ-6456-SC190L-0005</strong></td>
+                                <td>SC190L Hero (G10 EQ)</td>
+                                <td>Bodega Miami</td>
+                                <td>Mar 8, 2024</td>
+                                <td>Mar 8, 2025</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td><span class="status-badge scheduled">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SJ-6456-68L-0012</strong></td>
+                                <td>SC68L Hero (G1.5 Eq)</td>
+                                <td>Quick Mart Tampa</td>
+                                <td>Mar 15, 2024</td>
+                                <td>Mar 15, 2025</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td><span class="status-badge requested">Requested</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SJ-6456-SLIM-0023</strong></td>
+                                <td>Slimline Cooler (G9 EQ)</td>
+                                <td>Metro Grocery Houston</td>
+                                <td>Apr 2, 2024</td>
+                                <td>Jun 8, 2025</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td><span class="status-badge pending">In Scheduling</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="app-footer">
+            <div class="footer-brand">
+                <span><span class="data">Data</span><span class="v">V</span></span>
+                <span>|</span>
+                <span>DEMO - Asset Management Portal</span>
+            </div>
+            <div>Powered by <span style="color: var(--accent-green);">VLTRN</span></div>
+        </div>
+    </div>
+
+    <!-- Data Architecture -->
+    <script src="data.js"></script>
+
+    <script>
+        // ============================================================================
+        // DATAV ASSET PORTFOLIO - DYNAMIC DEMO ENGINE
+        // Powered by VLTRN
+        // ============================================================================
+
+        // Current filter state
+        const currentFilters = {
+            warehouse: { status: 'all', location: 'all' },
+            shipments: { status: 'all', carrier: 'all' },
+            warranty: { status: 'all', service: 'all' }
+        };
+
+        // Tab Navigation
+        function switchTab(tabName) {
+            const urls = {
+                'dashboard': 'https://datav.vltrn.io/demo/assets/dashboard',
+                'warehouse': 'https://datav.vltrn.io/demo/assets/warehouse',
+                'shipments': 'https://datav.vltrn.io/demo/assets/shipments',
+                'warranty': 'https://datav.vltrn.io/demo/assets/warranty-service'
+            };
+            document.getElementById('url-display').textContent = urls[tabName];
+
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('page-' + tabName).classList.add('active');
+
+            // Refresh table data when switching tabs
+            if (tabName === 'warehouse') refreshWarehouseTable();
+            if (tabName === 'shipments') refreshShipmentsTable();
+            if (tabName === 'warranty') refreshWarrantyTable();
+        }
+
+        // Dropdown Toggle
+        function toggleDropdown(trigger) {
+            const menu = trigger.nextElementSibling;
+            const isOpen = trigger.classList.contains('open');
+
+            document.querySelectorAll('.dropdown-trigger').forEach(t => {
+                t.classList.remove('open');
+                t.nextElementSibling.classList.remove('show');
+            });
+
+            if (!isOpen) {
+                trigger.classList.add('open');
+                menu.classList.add('show');
+            }
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.dropdown-trigger').forEach(t => {
+                    t.classList.remove('open');
+                    t.nextElementSibling.classList.remove('show');
+                });
+            }
+        });
+
+        // Select Option - MASTER FILTER HANDLER
+        function selectOption(item) {
+            const dropdown = item.closest('.custom-dropdown');
+            const trigger = dropdown.querySelector('.dropdown-trigger');
+            const menu = dropdown.querySelector('.dropdown-menu');
+            const filterType = dropdown.dataset.filter;
+            const value = item.dataset.value;
+
+            // Update UI checkboxes
+            menu.querySelectorAll('.dropdown-item').forEach(i => {
+                i.classList.remove('selected');
+                i.querySelector('.dropdown-checkbox').textContent = '';
+            });
+            item.classList.add('selected');
+            item.querySelector('.dropdown-checkbox').textContent = 'X';
+            trigger.textContent = item.querySelector('span').textContent;
+            trigger.classList.remove('open');
+            menu.classList.remove('show');
+
+            // Apply filter based on type
+            applyFilter(filterType, value);
+        }
+
+        // APPLY FILTER - Updates data, tables, and KPIs
+        function applyFilter(filterType, value) {
+            // Update filter state
+            if (filterType === 'warehouse' || filterType === 'wh-status') {
+                currentFilters.warehouse.status = value;
+            } else if (filterType === 'wh-location') {
+                currentFilters.warehouse.location = value;
+            } else if (filterType === 'shipments' || filterType === 'ship-status') {
+                currentFilters.shipments.status = value;
+            } else if (filterType === 'ship-carrier') {
+                currentFilters.shipments.carrier = value;
+            } else if (filterType === 'warranty' || filterType === 'war-status') {
+                currentFilters.warranty.status = value;
+            } else if (filterType === 'war-service') {
+                currentFilters.warranty.service = value;
+            }
+
+            // Refresh all data displays
+            updateAllDisplays();
+        }
+
+        // UPDATE ALL DISPLAYS - Tables and KPIs
+        function updateAllDisplays() {
+            // Get filtered data from DATA module
+            const warehouseData = getFilteredWarehouseData();
+            const shipmentsData = getFilteredShipmentsData();
+            const warrantyData = getFilteredWarrantyData();
+
+            // Update KPIs with animation
+            animateValue('kpi-pending', currentFilters.warehouse.status === 'pending' ? warehouseData.length : DATA.summary.pendingArrival);
+            animateValue('kpi-active-inv', currentFilters.warehouse.status === 'active' ? warehouseData.length : DATA.summary.activeInventory);
+            animateValue('kpi-transit', currentFilters.shipments.status === 'picked-up' ? shipmentsData.length : DATA.summary.inTransit);
+            animateValue('kpi-service', DATA.summary.warrantyRequests);
+
+            // Update summary cards
+            animateValue('sum-pending', currentFilters.warehouse.status === 'all' || currentFilters.warehouse.status === 'pending' ? DATA.summary.pendingArrival : 0);
+            animateValue('sum-active', currentFilters.warehouse.status === 'all' || currentFilters.warehouse.status === 'active' ?
+                (currentFilters.warehouse.location === 'all' ? DATA.summary.activeInventory : warehouseData.length) : 0);
+            animateValue('sum-exited', currentFilters.warehouse.status === 'all' || currentFilters.warehouse.status === 'exited' ? DATA.summary.exitedWarehouse : 0);
+
+            animateValue('sum-transit', shipmentsData.filter(u => u.shipmentStatus === 'in-transit').length);
+            animateValue('sum-scheduling', shipmentsData.filter(u => u.shipmentStatus === 'scheduling').length);
+            animateValue('sum-delivered', currentFilters.shipments.status === 'history' ? shipmentsData.length : DATA.summary.delivered);
+
+            animateValue('sum-warranties', warrantyData.filter(u => u.warrantyStatus === 'active').length);
+            animateValue('sum-requests', DATA.summary.warrantyRequests);
+            animateValue('sum-scheduled', DATA.summary.serviceScheduled);
+
+            // Update dashboard flow counts
+            animateValue('dash-warehouse-count', DATA.summary.activeInventory);
+            animateValue('dash-shipments-count', DATA.summary.inTransit);
+            animateValue('dash-delivered-count', DATA.summary.delivered);
+            animateValue('dash-warranty-count', DATA.summary.activeWarranties);
+
+            // Refresh visible tables
+            refreshWarehouseTable();
+            refreshShipmentsTable();
+            refreshWarrantyTable();
+        }
+
+        // GET FILTERED DATA FUNCTIONS
+        function getFilteredWarehouseData() {
+            let units = [];
+            const status = currentFilters.warehouse.status;
+            const location = currentFilters.warehouse.location;
+
+            if (status === 'all') {
+                units = [...DATA.warehouse.pending, ...DATA.warehouse.active, ...DATA.warehouse.exited];
+            } else if (status === 'pending') {
+                units = DATA.warehouse.pending;
+            } else if (status === 'active') {
+                units = DATA.warehouse.active;
+            } else if (status === 'exited' || status === 'ready') {
+                units = DATA.warehouse.exited;
+            }
+
+            // Filter by location if active units
+            if (location !== 'all' && (status === 'all' || status === 'active')) {
+                units = units.filter(u => u.location === location);
+            }
+
+            return units;
+        }
+
+        function getFilteredShipmentsData() {
+            let units = DATA.shipments.all;
+            const status = currentFilters.shipments.status;
+            const carrier = currentFilters.shipments.carrier;
+
+            if (status === 'picked-up' || status === 'in-transit') {
+                units = DATA.shipments.inTransit;
+            } else if (status === 'scheduling') {
+                units = DATA.shipments.scheduling;
+            } else if (status === 'history' || status === 'delivered') {
+                units = DATA.shipments.delivered;
+            }
+
+            if (carrier !== 'all') {
+                units = units.filter(u => u.carrierId === carrier);
+            }
+
+            return units;
+        }
+
+        function getFilteredWarrantyData() {
+            let units = DATA.warranty.all;
+            const status = currentFilters.warranty.status;
+            const service = currentFilters.warranty.service;
+
+            if (status === 'active') {
+                units = DATA.warranty.active;
+            } else if (status === 'requests') {
+                units = DATA.warranty.withServiceRequests;
+            } else if (status === 'in-scheduling') {
+                units = DATA.warranty.inScheduling;
+            } else if (status === 'scheduled') {
+                units = DATA.warranty.scheduled;
+            }
+
+            if (service !== 'all') {
+                if (service === 'no-issues') units = units.filter(u => u.serviceStatus === 'no-issues');
+                if (service === 'requested') units = units.filter(u => u.serviceStatus === 'requested');
+                if (service === 'scheduled') units = units.filter(u => u.serviceStatus === 'scheduled');
+            }
+
+            return units;
+        }
+
+        // REFRESH TABLE FUNCTIONS
+        function refreshWarehouseTable() {
+            const table = document.getElementById('warehouse-table');
+            if (!table) return;
+            const data = getFilteredWarehouseData();
+            table.innerHTML = RENDER.warehouseTableHTML(data, 20);
+
+            // Update warehouse page count display
+            const countDisplay = document.querySelector('#page-warehouse .table-title');
+            if (countDisplay) {
+                countDisplay.textContent = `Cooler Inventory - First Track Storage (${data.length} units)`;
+            }
+        }
+
+        function refreshShipmentsTable() {
+            const table = document.getElementById('shipments-table');
+            if (!table) return;
+            const data = getFilteredShipmentsData();
+            table.innerHTML = RENDER.shipmentsTableHTML(data, 20);
+
+            // Update shipments page count display
+            const countDisplay = document.querySelector('#page-shipments .table-title');
+            if (countDisplay) {
+                countDisplay.textContent = `Cooler Shipments - First Track Logistics (${data.length} shipments)`;
+            }
+        }
+
+        function refreshWarrantyTable() {
+            const table = document.getElementById('warranty-table');
+            if (!table) return;
+            const data = getFilteredWarrantyData();
+            table.innerHTML = RENDER.warrantyTableHTML(data, 20);
+
+            // Update warranty page count display
+            const countDisplay = document.querySelector('#page-warranty .table-title');
+            if (countDisplay) {
+                countDisplay.textContent = `Cooler Warranty Status - 1 Year from Delivery (${data.length} records)`;
+            }
+        }
+
+        // Animate number changes
+        function animateValue(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            const currentValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
+            if (currentValue === newValue) return;
+
+            const duration = 400;
+            const steps = 15;
+            const increment = (newValue - currentValue) / steps;
+            let current = currentValue;
+            let step = 0;
+
+            const timer = setInterval(() => {
+                step++;
+                current += increment;
+                element.textContent = Math.round(current).toLocaleString();
+                if (step >= steps) {
+                    clearInterval(timer);
+                    element.textContent = newValue.toLocaleString();
+                }
+            }, duration / steps);
+        }
+
+        // Clear All Filters
+        function clearAllFilters() {
+            currentFilters.warehouse = { status: 'all', location: 'all' };
+            currentFilters.shipments = { status: 'all', carrier: 'all' };
+            currentFilters.warranty = { status: 'all', service: 'all' };
+
+            document.querySelectorAll('.dropdown-item[data-value="all"]').forEach(item => {
+                const dropdown = item.closest('.custom-dropdown');
+                const trigger = dropdown.querySelector('.dropdown-trigger');
+                const menu = dropdown.querySelector('.dropdown-menu');
+
+                menu.querySelectorAll('.dropdown-item').forEach(i => {
+                    i.classList.remove('selected');
+                    i.querySelector('.dropdown-checkbox').textContent = '';
+                });
+                item.classList.add('selected');
+                item.querySelector('.dropdown-checkbox').textContent = 'X';
+
+                const filterType = dropdown.dataset.filter;
+                const defaultTexts = {
+                    'warehouse': 'All Inventory', 'shipments': 'All Shipments', 'warranty': 'All Status',
+                    'ship-status': 'All Shipments', 'ship-carrier': 'All Carriers',
+                    'wh-status': 'All Status', 'wh-location': 'All Locations',
+                    'war-status': 'All Status', 'war-service': 'All Service'
+                };
+                trigger.textContent = defaultTexts[filterType] || 'All';
+            });
+
+            updateAllDisplays();
+        }
+
+        // Search functionality for tables
+        document.querySelectorAll('.table-search').forEach(input => {
+            input.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const table = this.closest('.data-table').querySelector('tbody');
+                const rows = table.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        });
+
+        // INITIALIZE ON PAGE LOAD
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DataV Demo - Demo Initialized');
+            console.log('Total Units:', DATA.summary.totalUnits);
+            console.log('Active Inventory:', DATA.summary.activeInventory);
+            console.log('Pending Arrival:', DATA.summary.pendingArrival);
+
+            // Initialize tables with data
+            refreshWarehouseTable();
+            refreshShipmentsTable();
+            refreshWarrantyTable();
+            updateAllDisplays();
+        });
+    </script>
+</body>
+</html>

@@ -52,7 +52,7 @@
         }
 
         .logo .data { color: var(--primary); }
-        .logo .v { color: var(--accent); }
+        .logo .v { color: #FF00FF; }
 
         /* Main Container */
         .signup-container {
@@ -508,6 +508,19 @@
             <h2>Select Your Plan</h2>
             <p>Choose the plan that fits your needs. Upgrade anytime.</p>
 
+            <div class="plan-option selected" data-plan="free-trial" data-monthly="0" data-annual="0" data-setup="0">
+                <div class="plan-option-header">
+                    <span class="plan-option-name">Free Trial</span>
+                    <span class="plan-option-price" style="color: var(--accent);">FREE</span>
+                </div>
+                <div class="plan-option-desc">Try DataV with one upload - no credit card required</div>
+                <div class="plan-option-features">
+                    <span class="plan-feature-tag">1 Upload</span>
+                    <span class="plan-feature-tag">Partial Output</span>
+                    <span class="plan-feature-tag">7 Days</span>
+                </div>
+            </div>
+
             <div class="plan-option" data-plan="starter" data-monthly="199" data-annual="169" data-setup="499">
                 <div class="plan-option-header">
                     <span class="plan-option-name">Starter</span>
@@ -521,7 +534,7 @@
                 </div>
             </div>
 
-            <div class="plan-option selected" data-plan="professional" data-monthly="499" data-annual="424" data-setup="999">
+            <div class="plan-option" data-plan="professional" data-monthly="499" data-annual="424" data-setup="999">
                 <div class="plan-option-header">
                     <span class="plan-option-name">Professional</span>
                     <span class="plan-option-price">$499/mo</span>
@@ -716,9 +729,10 @@
 
                 <div class="terms-check">
                     <input type="checkbox" id="terms" required>
-                    <label for="terms">
+                    <label for="terms" id="terms-label">
                         I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
-                        I understand that my subscription will begin immediately and I will be charged the setup fee plus first month's subscription.
+                        <span id="terms-payment" style="display: none;">I understand that my subscription will begin immediately and I will be charged the setup fee plus first month's subscription.</span>
+                        <span id="terms-free">I understand this is a 7-day free trial with 1 upload and partial output.</span>
                     </label>
                 </div>
 
@@ -740,10 +754,10 @@
         </main>
     </div>
 
-    <script src="/js/config.js"></script>
+    <script src="/js/config.js?v=2.0.1"></script>
     <script>
         let currentStep = 1;
-        let selectedPlan = 'professional';
+        let selectedPlan = 'free-trial';
         let isAnnual = false;
         let selectedAddons = [];
 
@@ -782,26 +796,54 @@
             const monthly = isAnnual ? planOption.dataset.annual : planOption.dataset.monthly;
             const setup = planOption.dataset.setup;
             const planName = planOption.querySelector('.plan-option-name').textContent;
+            const isFree = selectedPlan === 'free-trial';
 
             // Update price display on plan cards
             document.querySelectorAll('.plan-option').forEach(opt => {
                 const price = isAnnual ? opt.dataset.annual : opt.dataset.monthly;
-                opt.querySelector('.plan-option-price').textContent = `$${price}/mo`;
+                if (opt.dataset.plan === 'free-trial') {
+                    opt.querySelector('.plan-option-price').textContent = 'FREE';
+                } else {
+                    opt.querySelector('.plan-option-price').textContent = `$${price}/mo`;
+                }
             });
 
-            // Calculate addons
+            // Calculate addons (not applicable for free trial)
             let addonTotal = 0;
-            selectedAddons.forEach(addon => {
-                addonTotal += parseInt(addon.price);
-            });
+            if (!isFree) {
+                selectedAddons.forEach(addon => {
+                    addonTotal += parseInt(addon.price);
+                });
+            }
 
             const monthlyTotal = parseInt(monthly) + addonTotal;
             const total = monthlyTotal + parseInt(setup);
 
             document.getElementById('summary-plan').textContent = planName;
-            document.getElementById('summary-monthly').textContent = `$${monthlyTotal}/mo`;
-            document.getElementById('summary-setup').textContent = `$${setup}`;
-            document.getElementById('summary-total').textContent = `$${total.toLocaleString()}`;
+
+            if (isFree) {
+                document.getElementById('summary-monthly').textContent = 'FREE';
+                document.getElementById('summary-setup').textContent = '$0';
+                document.getElementById('summary-total').textContent = '$0';
+            } else {
+                document.getElementById('summary-monthly').textContent = `$${monthlyTotal}/mo`;
+                document.getElementById('summary-setup').textContent = `$${setup}`;
+                document.getElementById('summary-total').textContent = `$${total.toLocaleString()}`;
+            }
+
+            // Update submit button text
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) {
+                submitBtn.textContent = isFree ? 'Start Free Trial' : 'Create Account';
+            }
+
+            // Update terms text
+            const termsFree = document.getElementById('terms-free');
+            const termsPayment = document.getElementById('terms-payment');
+            if (termsFree && termsPayment) {
+                termsFree.style.display = isFree ? 'inline' : 'none';
+                termsPayment.style.display = isFree ? 'none' : 'inline';
+            }
         }
 
         // Addon selection
@@ -963,7 +1005,7 @@
             } catch (error) {
                 alert(error.message || 'Failed to create account. Please try again.');
                 btn.disabled = false;
-                btn.textContent = 'Start Free Trial';
+                btn.textContent = selectedPlan === 'free-trial' ? 'Start Free Trial' : 'Create Account';
             }
         }
 

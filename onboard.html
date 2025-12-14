@@ -48,7 +48,7 @@
         }
 
         .logo .data { color: var(--primary-blue); }
-        .logo .v { color: var(--accent-green); }
+        .logo .v { color: #FF00FF; }
 
         .nav-back {
             color: var(--text-secondary);
@@ -365,10 +365,10 @@
 <body>
     <!-- Navigation -->
     <nav class="nav">
-        <a href="/" class="logo">
+        <a href="/projects/" class="logo">
             <span class="data">Data</span><span class="v">V</span>
         </a>
-        <a href="/" class="nav-back">Back to Home</a>
+        <a href="/projects/" class="nav-back">← Back to Dashboard</a>
     </nav>
 
     <!-- Main Content -->
@@ -540,7 +540,13 @@
         </div>
     </main>
 
+    <script src="/js/config.js?v=2.0.1"></script>
     <script>
+        // Check authentication
+        if (!DataVAuth.isAuthenticated()) {
+            window.location.href = '/login.html';
+        }
+
         let selectedFiles = {
             client: null,
             warehouse: null,
@@ -566,6 +572,46 @@
             document.querySelectorAll('.tms-option').forEach(o => o.classList.remove('selected'));
             element.classList.add('selected');
             document.getElementById('tms-partner').value = element.dataset.partner;
+        }
+
+        // Parse filename to extract project name and job ID
+        function parseFilename(filename) {
+            // Remove extension
+            const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+
+            // Try to extract job/PO number (patterns like JOB#1234, PO1234, #1234, _1234, -1234)
+            const jobPatterns = [
+                /(?:JOB|PO|ORDER|REF)[#_\-\s]?(\d+)/i,
+                /[#_\-](\d{4,})/,
+                /_(\d{4,})$/
+            ];
+
+            let jobId = '';
+            let projectName = nameWithoutExt;
+
+            for (const pattern of jobPatterns) {
+                const match = nameWithoutExt.match(pattern);
+                if (match) {
+                    jobId = match[1];
+                    // Remove the job ID part from project name
+                    projectName = nameWithoutExt.replace(pattern, '').trim();
+                    break;
+                }
+            }
+
+            // Clean up project name
+            projectName = projectName
+                .replace(/[_\-]+/g, ' ')  // Replace underscores and hyphens with spaces
+                .replace(/\s+/g, ' ')      // Normalize multiple spaces
+                .trim();
+
+            // Title case the project name
+            projectName = projectName
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+
+            return { projectName, jobId };
         }
 
         // File drop handling
@@ -598,15 +644,31 @@
 
         function handleFiles(files, type) {
             if (files.length > 0) {
-                selectedFiles[type] = files[0];
+                const file = files[0];
+                selectedFiles[type] = file;
+
+                // Display file info
                 const fileList = document.getElementById(type + '-files');
                 fileList.innerHTML = `
                     <div class="file-item">
-                        <span class="name">${files[0].name}</span>
-                        <span class="size">${(files[0].size / 1024).toFixed(1)} KB</span>
+                        <span class="name">${file.name}</span>
+                        <span class="size">${(file.size / 1024).toFixed(1)} KB</span>
                         <span class="remove" onclick="removeFile('${type}')">&times;</span>
                     </div>
                 `;
+
+                // Auto-populate form fields based on filename
+                const { projectName, jobId } = parseFilename(file.name);
+
+                if (type === 'client') {
+                    const nameInput = document.getElementById('client-name');
+                    const jobInput = document.getElementById('client-job');
+                    if (!nameInput.value) nameInput.value = projectName;
+                    if (!jobInput.value && jobId) jobInput.value = jobId;
+                } else if (type === 'warehouse') {
+                    const refInput = document.getElementById('warehouse-ref');
+                    if (!refInput.value && jobId) refInput.value = jobId;
+                }
             }
         }
 
@@ -615,7 +677,7 @@
             document.getElementById(type + '-files').innerHTML = '';
         }
 
-        function submitUpload(type) {
+        async function submitUpload(type) {
             const statusEl = document.getElementById('status-' + type);
 
             if (!selectedFiles[type]) {
@@ -624,18 +686,96 @@
                 return;
             }
 
+            // Gather form data
+            let projectName = '';
+            let jobId = '';
+            let dataType = type;
+
+            if (type === 'client') {
+                projectName = document.getElementById('client-name').value || 'New Project';
+                jobId = document.getElementById('client-job').value || '';
+            } else if (type === 'warehouse') {
+                const partner = document.getElementById('warehouse-partner').value;
+                const dataTypeVal = document.getElementById('warehouse-type').value;
+                jobId = document.getElementById('warehouse-ref').value || '';
+                projectName = partner ? partner + ' Warehouse Data' : 'Warehouse Data';
+            } else if (type === 'tms') {
+                const partner = document.getElementById('tms-partner').value;
+                projectName = partner ? partner + ' TMS Feed' : 'TMS Feed';
+            }
+
             // Show processing status
             statusEl.className = 'status-message processing';
-            statusEl.textContent = 'Processing... Agents are analyzing your data';
+            statusEl.textContent = 'Processing... Creating project and analyzing data';
 
-            // Simulate processing (in production, this would be an actual API call)
-            setTimeout(() => {
+            try {
+                // Create project via API
+                const projectResponse = await fetch(DATAV_CONFIG.API_URL + '/projects', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + DataVAuth.getToken()
+                    },
+                    body: JSON.stringify({
+                        name: projectName,
+                        description: jobId ? 'JOB #' + jobId + ' - ' + dataType : dataType + ' dataset'
+                    })
+                });
+
+                if (!projectResponse.ok) {
+                    const err = await projectResponse.json();
+                    throw new Error(err.detail || 'Failed to create project');
+                }
+
+                const project = await projectResponse.json();
+
+                // Upload file to project
+                const formData = new FormData();
+                formData.append('file', selectedFiles[type]);
+
+                const uploadResponse = await fetch(DATAV_CONFIG.API_URL + '/projects/' + project.id + '/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + DataVAuth.getToken()
+                    },
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    const err = await uploadResponse.json();
+                    throw new Error(err.detail || 'Failed to upload file');
+                }
+
+                const uploadResult = await uploadResponse.json();
+
                 statusEl.className = 'status-message success';
                 statusEl.innerHTML = `
-                    File processed successfully!<br>
-                    <small>Project dashboard will be updated automatically.</small>
+                    <strong>Project created successfully!</strong><br>
+                    <small>${projectName}${jobId ? ' (JOB #' + jobId + ')' : ''} is now active.</small>
+                    <div style="margin-top: 16px; display: flex; gap: 12px;">
+                        <a href="/projects/" style="display: inline-block; background: var(--accent-green); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Dashboard</a>
+                        <button onclick="hideForm(); removeFile('${type}'); clearForm('${type}');" style="background: var(--card-bg); color: var(--text-primary); padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer; font-weight: 600;">Upload Another</button>
+                    </div>
                 `;
-            }, 2000);
+            } catch (error) {
+                console.error('Upload error:', error);
+                statusEl.className = 'status-message error';
+                statusEl.textContent = 'Error creating project: ' + error.message;
+            }
+        }
+
+        function clearForm(type) {
+            if (type === 'client') {
+                document.getElementById('client-name').value = '';
+                document.getElementById('client-job').value = '';
+            } else if (type === 'warehouse') {
+                document.getElementById('warehouse-partner').value = '';
+                document.getElementById('warehouse-type').value = '';
+                document.getElementById('warehouse-ref').value = '';
+            } else if (type === 'tms') {
+                document.getElementById('tms-partner').value = '';
+                document.querySelectorAll('.tms-option').forEach(o => o.classList.remove('selected'));
+            }
         }
     </script>
 </body>
