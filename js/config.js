@@ -12,7 +12,7 @@ const CONFIG = {
 
     // Application Settings
     APP_NAME: 'DataV',
-    APP_VERSION: '1.0.0',
+    APP_VERSION: '3.1.0',
 
     // Plan Limits
     PLANS: {
